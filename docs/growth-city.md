@@ -105,7 +105,10 @@ all UI stay in code.
 ### Import
 
 ```bash
-# needs ffmpeg on PATH (or FFMPEG_PATH)
+# needs ffmpeg on PATH (or FFMPEG_PATH). No system ffmpeg? Grab a static build from PyPI:
+pip install imageio-ffmpeg
+export FFMPEG_PATH="$(python3 -c 'import imageio_ffmpeg as f; print(f.get_ffmpeg_exe())')"
+
 node scripts/growth-city-frames.mjs v1.mp4 v2.mp4 v3.mp4 v4.mp4   # files or URLs, story order
 npm run build
 ```
