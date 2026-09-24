@@ -112,7 +112,12 @@ export default async function CaseStudyPage({ params }: PageProps<"/portfolio/[s
           </div>
           <div className="relative mt-16 sm:mt-20">
             <div data-reveal="clip" className="relative z-[1]">
-              <BrowserFrame project={p} priority sizes="(min-width: 1536px) 1480px, 100vw" />
+              <BrowserFrame
+                project={p}
+                priority
+                sizes="(min-width: 1536px) 1480px, 100vw"
+                mediaProps={{ "data-fx": "zoom", "data-fx-amount": "1.05", "data-fx-trigger": "parent" }}
+              />
             </div>
           </div>
         </div>

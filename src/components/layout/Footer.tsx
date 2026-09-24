@@ -111,9 +111,14 @@ export function Footer() {
         </div>
       </div>
 
-      {/* Oversized wordmark */}
+      {/* Oversized wordmark — drifts into place and firms up as the footer scrolls in */}
       <div aria-hidden className="pointer-events-none relative z-[1] -mb-[3.2vw] select-none overflow-hidden">
-        <p className="font-display-tight whitespace-nowrap text-center text-[21.5vw] font-semibold text-paper/[0.045]">
+        <p
+          data-fx="progress"
+          data-fx-start="top bottom"
+          data-fx-end="clamp(bottom bottom)"
+          className="footer-mark font-display-tight whitespace-nowrap text-center text-[21.5vw] font-semibold text-paper"
+        >
           BrandSpace
         </p>
       </div>

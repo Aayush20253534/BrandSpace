@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import { Photo } from "@/components/ui/Photo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { blogPosts, getCategory, getPost, relatedPosts } from "@/data/blog";
@@ -12,6 +12,7 @@ import { Breadcrumbs } from "@/components/ui/PageHero";
 import { PostCard, PostMeta } from "@/components/blog/PostCard";
 import { TableOfContents } from "@/components/blog/TableOfContents";
 import { ShareLinks } from "@/components/blog/ShareLinks";
+import { ReadingProgress } from "@/components/blog/ReadingProgress";
 import { Avatar } from "@/components/ui/Avatar";
 import { WhatsAppButton, TextLink } from "@/components/ui/Button";
 
@@ -45,7 +46,7 @@ export async function generateMetadata({ params }: PageProps<"/blog/[slug]">): P
     modifiedTime: post.updatedAt ?? post.publishedAt,
     authors: author ? [author.name] : undefined,
     keywords: post.keywords,
-    image: { url: post.cover.src, width: 1600, height: 900, alt: post.cover.alt },
+    image: { url: post.cover.og, width: 1200, height: 630, alt: post.cover.alt },
   });
 }
 
@@ -87,6 +88,7 @@ export default async function ArticlePage({ params }: PageProps<"/blog/[slug]">)
         })}
       />
 
+      <ReadingProgress targetId="article-body" />
       <article>
         <header className="grain relative bg-ink pb-40 pt-[calc(var(--header-h)+3.5rem)] text-paper sm:pb-56 sm:pt-[calc(var(--header-h)+5rem)]">
           <div className="container-bs relative z-[2]">
@@ -115,9 +117,30 @@ export default async function ArticlePage({ params }: PageProps<"/blog/[slug]">)
 
         <div className="bg-paper text-ink">
           <div className="container-bs">
-            <div className="relative -mt-28 aspect-[16/9] overflow-hidden rounded-[10px] shadow-[0_40px_80px_-40px_rgba(0,0,0,0.5)] sm:-mt-40">
-              <Image src={post.cover.src} alt={post.cover.alt} fill sizes="(min-width: 1536px) 1480px, 100vw" loading="eager" fetchPriority="high" className="object-cover" />
-            </div>
+            <figure className="relative -mt-28 sm:-mt-40">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-[10px] bg-ink-3 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.5)] sm:aspect-[16/9]">
+                {/* Oversized so the gentle parallax never reveals an edge */}
+                <div className="absolute inset-x-0 -inset-y-[7%]" data-fx="parallax" data-fx-amount="5" data-fx-trigger="parent">
+                  <Photo
+                    src={post.cover.src}
+                    alt={post.cover.alt}
+                    fill
+                    sizes="(min-width: 1536px) 1480px, 100vw"
+                    loading="eager"
+                    fetchPriority="high"
+                    className="object-cover"
+                    style={post.cover.position ? { objectPosition: post.cover.position } : undefined}
+                  />
+                </div>
+                <span aria-hidden className="cover-tint pointer-events-none absolute inset-0 opacity-60" />
+              </div>
+              <figcaption className="mt-3 text-right text-[0.72rem] text-ink/60">
+                Photo:{" "}
+                <a href={post.cover.credit.href} target="_blank" rel="noopener noreferrer" className="underline-offset-2 hover:text-ink hover:underline">
+                  {post.cover.credit.name} / Unsplash
+                </a>
+              </figcaption>
+            </figure>
 
             <div className="grid gap-12 py-16 sm:py-24 lg:grid-cols-12 lg:gap-10">
               <aside className="hidden lg:col-span-3 lg:block">
@@ -127,7 +150,7 @@ export default async function ArticlePage({ params }: PageProps<"/blog/[slug]">)
                 </div>
               </aside>
 
-              <div className="min-w-0 lg:col-span-7 lg:col-start-5">
+              <div id="article-body" className="min-w-0 lg:col-span-7 lg:col-start-5">
                 <div className="prose-bs" dangerouslySetInnerHTML={{ __html: html }} />
 
                 <ShareLinks url={url} title={post.title} className="mt-14 border-t border-ink/10 pt-8 lg:hidden" />
@@ -175,8 +198,10 @@ export default async function ArticlePage({ params }: PageProps<"/blog/[slug]">)
               <TextLink href="/blog">All articles</TextLink>
             </div>
             <div className="mt-14 grid gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
-              {related.map((p) => (
-                <PostCard key={p.slug} post={p} minutes={readingTime(p.slug)} />
+              {related.map((p, i) => (
+                <div key={p.slug} data-reveal="up" style={{ ["--rv-delay" as string]: `${i * 120}ms` }}>
+                  <PostCard post={p} minutes={readingTime(p.slug)} />
+                </div>
               ))}
             </div>
           </div>

@@ -2,12 +2,13 @@
 
 import Script from "next/script";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
 import { budgetOptions, contactSchema, serviceOptions } from "@/lib/contact";
 import { whatsappUrl, mailUrl } from "@/lib/whatsapp";
 import { site } from "@/data/site";
 import { cn } from "@/lib/utils";
-import { ArrowRight, Check, WhatsApp } from "@/components/ui/Icons";
+import { ArrowRight, WhatsApp } from "@/components/ui/Icons";
 
 type Status = "idle" | "submitting" | "success" | "error";
 type Values = {
@@ -51,6 +52,20 @@ export function ContactForm() {
     if (status !== "success") return;
     successRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     successRef.current?.focus({ preventScroll: true });
+  }, [status]);
+
+  // Success: the badge pops, the check draws itself, a ring pulses out and the copy rises.
+  useLayoutEffect(() => {
+    const el = successRef.current;
+    if (status !== "success" || !el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const tl = gsap.timeline();
+    tl.fromTo(el.querySelector(".cs-badge"), { scale: 0.4, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, ease: "back.out(1.7)" })
+      .fromTo(el.querySelector(".cs-check"), { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.55, ease: "power2.out" }, 0.3)
+      .fromTo(el.querySelector(".cs-ring"), { scale: 1, opacity: 0.7 }, { scale: 2.4, opacity: 0, duration: 1.3, ease: "expo.out" }, 0.35)
+      .fromTo(el.querySelectorAll(".cs-rise"), { y: 22, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "expo.out", stagger: 0.09 }, 0.4);
+    return () => {
+      tl.kill();
+    };
   }, [status]);
 
   const errors = { ...validate(values), ...serverErrors };
@@ -108,16 +123,21 @@ export function ContactForm() {
   if (status === "success") {
     const followUp = `Hi BrandSpace, I’m ${values.name} from ${values.company}. I just sent an enquiry about ${values.service} through your website and would like to discuss my business/project.`;
     return (
-      <div ref={successRef} tabIndex={-1} role="status" aria-live="polite" className="animate-[panelIn_0.7s_var(--ease-out-expo)_both] py-6 text-center outline-none sm:py-10">
-        <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-green text-ink">
-          <Check size={30} />
+      <div ref={successRef} tabIndex={-1} role="status" aria-live="polite" className="py-6 text-center outline-none sm:py-10">
+        <span className="relative mx-auto grid h-16 w-16 place-items-center">
+          <span aria-hidden className="cs-ring absolute inset-0 rounded-full border-2 border-green opacity-0" />
+          <span className="cs-badge grid h-16 w-16 place-items-center rounded-full bg-green text-ink">
+            <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path className="cs-check" d="m5 12.5 4.5 4.5L19 7.5" pathLength={1} strokeDasharray="1" />
+            </svg>
+          </span>
         </span>
-        <h2 className="font-display-tight mt-8 text-[clamp(2rem,4vw,3rem)] font-semibold">Thank you, {values.name.split(" ")[0]}.</h2>
-        <p className="mx-auto mt-4 max-w-md leading-relaxed text-ink/65">
+        <h2 className="cs-rise font-display-tight mt-8 text-[clamp(2rem,4vw,3rem)] font-semibold">Thank you, {values.name.split(" ")[0]}.</h2>
+        <p className="cs-rise mx-auto mt-4 max-w-md leading-relaxed text-ink/65">
           Your project brief is with the BrandSpace team. We’ll review it and get back to you at{" "}
           <span className="font-medium text-ink">{values.email}</span>.
         </p>
-        <div className="mt-10 flex flex-col items-center gap-4">
+        <div className="cs-rise mt-10 flex flex-col items-center gap-4">
           <a
             href={whatsappUrl(followUp)}
             target="_blank"
@@ -137,7 +157,15 @@ export function ContactForm() {
     );
   }
 
-  const field = "peer w-full rounded-[6px] border bg-white/70 px-4 py-3.5 text-[1rem] text-ink outline-none transition-[border-color,box-shadow] placeholder:text-ink/50 focus:border-ink focus:bg-white focus:shadow-[0_0_0_3px_rgba(91,209,123,0.35)]";
+  const field = "peer w-full rounded-[6px] border bg-white/70 px-4 py-3.5 text-[1rem] text-ink outline-none transition-[border-color,box-shadow,background-color] duration-300 placeholder:text-ink/50 focus:border-ink focus:bg-white focus:shadow-[0_0_0_3px_rgba(91,209,123,0.35)]";
+  const labelCls = "mb-2 block text-[0.82rem] font-medium text-ink/80 transition-colors duration-300 group-focus-within/field:text-green-deep";
+  /** Green accent that draws along the bottom edge of the focused field. */
+  const accent = (
+    <span
+      aria-hidden
+      className="pointer-events-none absolute inset-x-3 bottom-0 h-[2px] origin-left scale-x-0 rounded-full bg-green transition-transform duration-500 ease-[var(--ease-out-expo)] peer-focus:scale-x-100"
+    />
+  );
   const border = (k: keyof Values) => (show(k) ? "border-[#c0392b]" : "border-ink/15 hover:border-ink/35");
 
   const err = (k: keyof Values) =>
@@ -173,36 +201,48 @@ export function ContactForm() {
       </div>
 
       <div className="grid gap-x-5 gap-y-6 sm:grid-cols-2">
-        <div>
-          <label htmlFor="name" className="mb-2 block text-[0.82rem] font-medium text-ink/80">
+        <div className="group/field">
+          <label htmlFor="name" className={labelCls}>
             Name <span className="text-green-deep" aria-hidden>*</span>
           </label>
-          <input id="name" name="name" autoComplete="name" required value={values.name} onChange={(e) => set("name", e.target.value)} onBlur={() => blur("name")} aria-invalid={!!show("name")} aria-describedby={describe("name")} className={cn(field, border("name"))} placeholder="Your full name" />
+          <div className="relative">
+            <input id="name" name="name" autoComplete="name" required value={values.name} onChange={(e) => set("name", e.target.value)} onBlur={() => blur("name")} aria-invalid={!!show("name")} aria-describedby={describe("name")} className={cn(field, border("name"))} placeholder="Your full name" />
+            {accent}
+          </div>
           {err("name")}
         </div>
-        <div>
-          <label htmlFor="company" className="mb-2 block text-[0.82rem] font-medium text-ink/80">
+        <div className="group/field">
+          <label htmlFor="company" className={labelCls}>
             Business / Company <span className="text-green-deep" aria-hidden>*</span>
           </label>
-          <input id="company" name="company" autoComplete="organization" required value={values.company} onChange={(e) => set("company", e.target.value)} onBlur={() => blur("company")} aria-invalid={!!show("company")} aria-describedby={describe("company")} className={cn(field, border("company"))} placeholder="Business name" />
+          <div className="relative">
+            <input id="company" name="company" autoComplete="organization" required value={values.company} onChange={(e) => set("company", e.target.value)} onBlur={() => blur("company")} aria-invalid={!!show("company")} aria-describedby={describe("company")} className={cn(field, border("company"))} placeholder="Business name" />
+            {accent}
+          </div>
           {err("company")}
         </div>
-        <div>
-          <label htmlFor="email" className="mb-2 block text-[0.82rem] font-medium text-ink/80">
+        <div className="group/field">
+          <label htmlFor="email" className={labelCls}>
             Email <span className="text-green-deep" aria-hidden>*</span>
           </label>
-          <input id="email" name="email" type="email" inputMode="email" autoComplete="email" required value={values.email} onChange={(e) => set("email", e.target.value)} onBlur={() => blur("email")} aria-invalid={!!show("email")} aria-describedby={describe("email")} className={cn(field, border("email"))} placeholder="you@business.com" />
+          <div className="relative">
+            <input id="email" name="email" type="email" inputMode="email" autoComplete="email" required value={values.email} onChange={(e) => set("email", e.target.value)} onBlur={() => blur("email")} aria-invalid={!!show("email")} aria-describedby={describe("email")} className={cn(field, border("email"))} placeholder="you@business.com" />
+            {accent}
+          </div>
           {err("email")}
         </div>
-        <div>
-          <label htmlFor="phone" className="mb-2 block text-[0.82rem] font-medium text-ink/80">
+        <div className="group/field">
+          <label htmlFor="phone" className={labelCls}>
             Phone <span className="text-green-deep" aria-hidden>*</span>
           </label>
-          <input id="phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" required value={values.phone} onChange={(e) => set("phone", e.target.value)} onBlur={() => blur("phone")} aria-invalid={!!show("phone")} aria-describedby={describe("phone")} className={cn(field, border("phone"))} placeholder="+91 98765 43210" />
+          <div className="relative">
+            <input id="phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" required value={values.phone} onChange={(e) => set("phone", e.target.value)} onBlur={() => blur("phone")} aria-invalid={!!show("phone")} aria-describedby={describe("phone")} className={cn(field, border("phone"))} placeholder="+91 98765 43210" />
+            {accent}
+          </div>
           {err("phone")}
         </div>
-        <div>
-          <label htmlFor="service" className="mb-2 block text-[0.82rem] font-medium text-ink/80">
+        <div className="group/field">
+          <label htmlFor="service" className={labelCls}>
             Service required <span className="text-green-deep" aria-hidden>*</span>
           </label>
           <div className="relative">
@@ -216,12 +256,13 @@ export function ContactForm() {
                 </option>
               ))}
             </select>
-            <ArrowRight size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 rotate-90 text-ink/60" />
+            {accent}
+            <ArrowRight size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 rotate-90 text-ink/60 transition-[rotate,color] duration-300 peer-focus:rotate-[270deg] peer-focus:text-green-deep" />
           </div>
           {err("service")}
         </div>
-        <div>
-          <label htmlFor="budget" className="mb-2 block text-[0.82rem] font-medium text-ink/80">
+        <div className="group/field">
+          <label htmlFor="budget" className={labelCls}>
             Budget range <span className="text-green-deep" aria-hidden>*</span>
           </label>
           <div className="relative">
@@ -235,15 +276,19 @@ export function ContactForm() {
                 </option>
               ))}
             </select>
-            <ArrowRight size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 rotate-90 text-ink/60" />
+            {accent}
+            <ArrowRight size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 rotate-90 text-ink/60 transition-[rotate,color] duration-300 peer-focus:rotate-[270deg] peer-focus:text-green-deep" />
           </div>
           {err("budget")}
         </div>
-        <div className="sm:col-span-2">
-          <label htmlFor="details" className="mb-2 block text-[0.82rem] font-medium text-ink/80">
+        <div className="group/field sm:col-span-2">
+          <label htmlFor="details" className={labelCls}>
             Project details <span className="text-green-deep" aria-hidden>*</span>
           </label>
-          <textarea id="details" name="details" rows={5} required value={values.details} onChange={(e) => set("details", e.target.value)} onBlur={() => blur("details")} aria-invalid={!!show("details")} aria-describedby={describe("details", "details-hint")} className={cn(field, border("details"), "min-h-[9rem] resize-y")} placeholder="Tell us about your business, your goals and what you’d like help with." />
+          <div className="relative">
+            <textarea id="details" name="details" rows={5} required value={values.details} onChange={(e) => set("details", e.target.value)} onBlur={() => blur("details")} aria-invalid={!!show("details")} aria-describedby={describe("details", "details-hint")} className={cn(field, border("details"), "min-h-[9rem] resize-y")} placeholder="Tell us about your business, your goals and what you’d like help with." />
+            {accent}
+          </div>
           <p id="details-hint" className="mt-2 text-[0.78rem] text-ink/65">
             What does success look like in six months? Any deadlines or links we should see?
           </p>

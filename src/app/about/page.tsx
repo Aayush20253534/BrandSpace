@@ -10,6 +10,7 @@ import { PageHero } from "@/components/ui/PageHero";
 import { RevealText } from "@/components/motion/RevealText";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { FoundingTeam } from "@/components/about/FoundingTeam";
+import { AboutHeroVisual } from "@/components/ui/HeroVisuals";
 import { FinalCta } from "@/components/home/FinalCta";
 import { MapPin } from "@/components/ui/Icons";
 import { TextLink } from "@/components/ui/Button";
@@ -63,6 +64,7 @@ export default function AboutPage() {
         eyebrow="About BrandSpace"
         title={"We build the *space* businesses grow into."}
         intro="BrandSpace is a digital growth agency from Prayagraj. We help ambitious businesses look as good as they are, get found by the right people and turn attention into growth."
+        visual={<AboutHeroVisual />}
       />
 
       {/* Story */}
@@ -81,22 +83,22 @@ export default function AboutPage() {
             />
           </div>
           <div className="space-y-6 text-[1.1rem] leading-relaxed text-ink/75 lg:col-span-6 lg:col-start-7">
-            <p data-reveal="up">
+            <p data-reveal="up" style={{ ["--rv-delay" as string]: "0ms" }}>
               BrandSpace began with a simple observation. Around us in Prayagraj were hotels, clinics, restaurants,
               garages and service companies doing genuinely excellent work — and yet, online, many of them were almost
               invisible. Outdated websites, neglected Google profiles and social feeds that didn’t reflect the quality of
               the business behind them.
             </p>
-            <p data-reveal="up">
+            <p data-reveal="up" style={{ ["--rv-delay" as string]: "110ms" }}>
               Based at IIHMF, MNNIT Allahabad, we set out to close that gap — not with one-off deliverables, but by
               treating a business’s digital presence as one connected system: a brand people recognise, a website that
               converts, search visibility that brings people in, and content and campaigns that keep them coming back.
             </p>
-            <p data-reveal="up">
+            <p data-reveal="up" style={{ ["--rv-delay" as string]: "220ms" }}>
               Today we partner with businesses across hospitality, nightlife, automotive, healthcare and workforce
               services — bringing strategy, design, engineering and performance marketing together under one roof.
             </p>
-            <div data-reveal="up" className="pt-4">
+            <div data-reveal="up" style={{ ["--rv-delay" as string]: "330ms" }} className="pt-4">
               <TextLink href="/portfolio" className="text-ink">
                 See the work
               </TextLink>
@@ -110,17 +112,21 @@ export default function AboutPage() {
         <div className="container-bs grid lg:grid-cols-2">
           <div className="border-b border-paper/10 py-20 sm:py-28 lg:border-b-0 lg:border-r lg:pr-16">
             <SectionLabel index="02">Vision</SectionLabel>
-            <p data-reveal="up" className="mt-8 font-serif text-[clamp(1.9rem,3.4vw,3.2rem)] italic leading-[1.15]">
-              A future where every ambitious business — whatever its size or city — has a digital presence as strong as
-              the work it does.
-            </p>
+            <RevealText
+              as="p"
+              text="A future where every ambitious business — whatever its size or city — has a digital presence as strong as the work it does."
+              className="mt-8 font-serif text-[clamp(1.9rem,3.4vw,3.2rem)] italic leading-[1.15]"
+            />
           </div>
           <div className="py-20 sm:py-28 lg:pl-16">
             <SectionLabel index="03">Mission</SectionLabel>
-            <p data-reveal="up" className="mt-8 font-display text-[clamp(1.5rem,2.4vw,2.2rem)] font-medium leading-[1.3] tracking-[-0.02em] text-paper/90">
-              To design, build and grow connected digital ecosystems — websites, search, social and advertising — that
-              turn attention into <span className="text-green">measurable growth</span> for the businesses we partner with.
-            </p>
+            <RevealText
+              as="p"
+              text="To design, build and grow connected digital ecosystems — websites, search, social and advertising — that turn attention into *measurable growth* for the businesses we partner with."
+              className="mt-8 font-display text-[clamp(1.5rem,2.4vw,2.2rem)] font-medium leading-[1.3] tracking-[-0.02em] text-paper/90"
+              accentClassName="text-green"
+              delay={150}
+            />
           </div>
         </div>
       </section>
@@ -157,7 +163,7 @@ export default function AboutPage() {
             </div>
             <ol className="mt-12 grid grid-cols-2 gap-px overflow-hidden rounded-[8px] bg-paper/10 sm:grid-cols-3 lg:grid-cols-6">
               {processSteps.map((s, i) => (
-                <li key={s.title} className="bg-ink-2 p-6">
+                <li key={s.title} data-reveal="up" style={{ ["--rv-delay" as string]: `${i * 70}ms` }} className="bg-ink-2 p-6">
                   <span className="text-xs tabular-nums text-green">{pad2(i + 1)}</span>
                   <p className="mt-6 font-display text-lg font-semibold uppercase tracking-[0.04em]">{s.title}</p>
                   <p className="mt-2 text-sm leading-snug text-paper/60">{s.output}</p>

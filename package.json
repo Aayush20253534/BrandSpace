@@ -10,7 +10,6 @@
     "typecheck": "tsc --noEmit",
     "assets:logo": "node scripts/process-logo.mjs",
     "assets:portfolio": "node scripts/process-portfolio.mjs",
-    "assets:covers": "node scripts/generate-covers.mjs",
     "assets:og": "node scripts/generate-og.mjs",
     "growth-city:frames": "node scripts/growth-city-frames.mjs"
   },

@@ -5,7 +5,7 @@ import { readingTime } from "@/lib/blog";
 import { breadcrumbSchema, pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { PageHero } from "@/components/ui/PageHero";
-import { PostCard } from "@/components/blog/PostCard";
+import { PostGrid } from "@/components/blog/PostCard";
 import { CategoryNav } from "@/components/blog/CategoryNav";
 import { FinalCta } from "@/components/home/FinalCta";
 
@@ -30,7 +30,9 @@ export default async function CategoryPage({ params }: PageProps<"/blog/category
   const { category } = await params;
   const cat = getCategory(category);
   if (!cat) notFound();
-  const posts = postsByDate().filter((p) => p.category === cat.slug);
+  const posts = postsByDate()
+    .filter((p) => p.category === cat.slug)
+    .map((p) => ({ ...p, minutes: readingTime(p.slug) }));
   const crumbs = [
     { name: "Home", path: "/" },
     { name: "Blog", path: "/blog" },
@@ -50,10 +52,8 @@ export default async function CategoryPage({ params }: PageProps<"/blog/category
           <h2 className="eyebrow text-ink/65">
             {posts.length} {posts.length === 1 ? "article" : "articles"}
           </h2>
-          <div className="mt-12 grid gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
-            {posts.map((p, i) => (
-              <PostCard key={p.slug} post={p} minutes={readingTime(p.slug)} tone="light" eager={i === 0} />
-            ))}
+          <div className="mt-12">
+            <PostGrid posts={posts} tone="light" eagerFirst />
           </div>
         </div>
       </section>

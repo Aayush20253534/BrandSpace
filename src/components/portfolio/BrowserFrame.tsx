@@ -10,6 +10,7 @@ export function BrowserFrame({
   priority,
   zoom = true,
   tone = "dark",
+  mediaProps,
 }: {
   project: Project;
   className?: string;
@@ -19,6 +20,8 @@ export function BrowserFrame({
   /** Slow zoom on reveal / hover. */
   zoom?: boolean;
   tone?: "dark" | "light";
+  /** Attributes for the wrapper around the screenshot (e.g. scroll-driven effects). */
+  mediaProps?: React.HTMLAttributes<HTMLDivElement> & Record<`data-${string}`, string>;
 }) {
   return (
     <div
@@ -45,22 +48,24 @@ export function BrowserFrame({
         <span className="w-10" aria-hidden />
       </div>
       <div className="relative aspect-[16/9] overflow-hidden">
-        {project.preview ? (
-          <Image
-            src={project.preview.src}
-            alt={project.preview.alt}
-            fill
-            sizes={sizes}
-            loading={priority ? "eager" : undefined}
-            fetchPriority={priority ? "high" : undefined}
-            className={cn(
-              "object-cover object-top",
-              zoom && "rv-zoom transition-transform duration-[1.6s] ease-[var(--ease-out-expo)] group-hover:scale-[1.035]",
-            )}
-          />
-        ) : (
-          <PreviewPlaceholder project={project} />
-        )}
+        <div {...mediaProps} className={cn("absolute inset-0", mediaProps?.className)}>
+          {project.preview ? (
+            <Image
+              src={project.preview.src}
+              alt={project.preview.alt}
+              fill
+              sizes={sizes}
+              loading={priority ? "eager" : undefined}
+              fetchPriority={priority ? "high" : undefined}
+              className={cn(
+                "object-cover object-top",
+                zoom && "rv-zoom transition-[scale,translate] duration-[1.6s] ease-[var(--ease-out-expo)] group-hover:translate-y-[-0.6%] group-hover:scale-[1.035]",
+              )}
+            />
+          ) : (
+            <PreviewPlaceholder project={project} />
+          )}
+        </div>
       </div>
     </div>
   );

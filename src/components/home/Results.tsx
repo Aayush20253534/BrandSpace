@@ -48,24 +48,30 @@ export function Results() {
 
         <ol className="mt-16 border-t border-ink/15 lg:mt-24">
           {items.map(({ project, metric }, i) => (
-            <li key={project.slug} data-reveal="up" style={{ ["--rv-delay" as string]: `${i * 80}ms` }}>
+            // data-center: <InViewObserver> sets data-active while the row crosses the middle of the screen.
+            <li key={project.slug} data-center data-reveal="up" className="group/row" style={{ ["--rv-delay" as string]: `${i * 80}ms` }}>
               <Link
                 href={`/portfolio/${project.slug}`}
-                className="group grid grid-cols-12 items-center gap-x-4 gap-y-3 border-b border-ink/15 py-8 transition-colors hover:bg-ink/[0.025] sm:py-10"
+                className="group relative grid grid-cols-12 items-center gap-x-4 gap-y-3 border-b border-ink/15 py-8 transition-colors duration-700 hover:bg-ink/[0.03] group-data-[active]/row:bg-ink/[0.035] sm:py-10"
               >
+                {/* Accent line extends along the rule while the row is in focus */}
+                <span
+                  aria-hidden
+                  className="absolute -bottom-px left-0 h-px w-full origin-left scale-x-0 bg-green-deep transition-transform duration-[1100ms] ease-[var(--ease-out-expo)] group-hover:scale-x-100 group-data-[active]/row:scale-x-100"
+                />
                 <div className="col-span-12 flex items-center gap-4 sm:col-span-4">
-                  <span className="relative hidden h-14 w-24 shrink-0 overflow-hidden rounded-[4px] bg-ink sm:block">
+                  <span className="relative hidden h-14 w-24 shrink-0 origin-left overflow-hidden rounded-[4px] bg-ink transition-[scale] duration-700 ease-[var(--ease-out-expo)] group-data-[active]/row:scale-[1.18] sm:block">
                     {project.preview && (
                       <Image
                         src={project.preview.src}
                         alt=""
                         fill
-                        sizes="96px"
-                        className="object-cover object-top transition-transform duration-700 group-hover:scale-110"
+                        sizes="120px"
+                        className="object-cover object-top transition-[scale] duration-700 group-hover:scale-110"
                       />
                     )}
                   </span>
-                  <span>
+                  <span className="transition-[translate] duration-700 ease-[var(--ease-out-expo)] sm:group-data-[active]/row:translate-x-3">
                     <span className="block font-display text-xl font-semibold tracking-[-0.02em]">{project.name}</span>
                     <span className="block text-sm text-ink/65">{project.industry}</span>
                   </span>
@@ -76,15 +82,17 @@ export function Results() {
                     prefix={metric.prefix}
                     suffix={metric.suffix}
                     decimals={metric.decimals}
-                    className="font-display-tight block text-[clamp(3rem,7vw,6rem)] font-semibold tabular-nums text-ink"
+                    className="font-display-tight block origin-left text-[clamp(3rem,7vw,6rem)] font-semibold tabular-nums text-ink/55 transition-[color,scale] duration-700 ease-[var(--ease-out-expo)] group-hover:text-ink group-data-[active]/row:scale-[1.06] group-data-[active]/row:text-ink"
                   />
                 </div>
                 <div className="col-span-5 flex items-center justify-between gap-4 sm:col-span-4">
                   <span>
                     <span className="block text-sm font-semibold uppercase tracking-[0.12em] text-green-deep">{metric.label}</span>
-                    <span className="mt-1 block text-sm leading-snug text-ink/65">{metric.context}</span>
+                    <span className="mt-1 block text-sm leading-snug text-ink/65 transition-colors duration-700 group-data-[active]/row:text-ink/85">
+                      {metric.context}
+                    </span>
                   </span>
-                  <ArrowUpRight size={22} className="hidden shrink-0 text-ink/30 transition-all group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-ink sm:block" />
+                  <ArrowUpRight size={22} className="hidden shrink-0 text-ink/30 transition-all group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-ink group-data-[active]/row:text-green-deep sm:block" />
                 </div>
               </Link>
             </li>

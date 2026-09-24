@@ -8,11 +8,20 @@ type Variant = "primary" | "light" | "outline" | "outline-dark" | "dark";
 type Size = "md" | "lg";
 
 const variants: Record<Variant, string> = {
-  primary: "bg-green text-ink hover:bg-green-bright",
-  light: "bg-paper text-ink hover:bg-white",
-  dark: "bg-ink text-paper hover:bg-ink-3",
-  outline: "border border-paper/25 text-paper hover:border-paper/60 hover:bg-paper/[0.04]",
+  primary: "bg-green text-ink",
+  light: "bg-paper text-ink",
+  dark: "bg-ink text-paper",
+  outline: "border border-paper/25 text-paper hover:border-paper/60",
   "outline-dark": "border border-ink/20 text-ink hover:border-ink/60",
+};
+
+/** Fill that sweeps in from the left on hover. */
+const sweep: Record<Variant, string> = {
+  primary: "bg-green-bright",
+  light: "bg-white",
+  dark: "bg-ink-3",
+  outline: "bg-paper/[0.06]",
+  "outline-dark": "bg-ink/[0.05]",
 };
 
 const sizes: Record<Size, string> = {
@@ -39,17 +48,33 @@ type CommonProps = {
 
 function Inner({ children, variant = "primary", icon = "arrow" }: CommonProps) {
   const Icon = icon === "whatsapp" ? WhatsApp : icon === "external" ? ArrowUpRight : ArrowRight;
+  const handOff = "transition-[translate] duration-500 ease-[var(--ease-out-expo)]";
   return (
     <>
-      <span className="font-semibold uppercase tracking-[0.16em]">{children}</span>
+      <span
+        aria-hidden
+        className={cn(
+          "absolute inset-0 origin-left scale-x-0 rounded-full transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover:scale-x-100",
+          sweep[variant],
+        )}
+      />
+      <span className="relative font-semibold uppercase tracking-[0.16em]">{children}</span>
       <span
         className={cn(
-          "grid aspect-square h-[calc(100%-0.75rem)] place-items-center rounded-full transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover:rotate-[-45deg]",
-          icon !== "arrow" && "group-hover:rotate-0 group-hover:scale-110",
+          "relative grid aspect-square h-[calc(100%-0.75rem)] place-items-center overflow-hidden rounded-full transition-transform duration-500 ease-[var(--ease-out-expo)]",
+          icon !== "arrow" && "group-hover:scale-110",
           iconWrap[variant],
         )}
       >
-        <Icon size={icon === "whatsapp" ? 18 : 17} />
+        {icon === "arrow" ? (
+          <>
+            {/* The arrow slides out and a fresh one slides in behind it */}
+            <ArrowRight size={17} className={cn(handOff, "group-hover:translate-x-[200%]")} />
+            <ArrowRight size={17} className={cn(handOff, "absolute -translate-x-[200%] group-hover:translate-x-0")} />
+          </>
+        ) : (
+          <Icon size={icon === "whatsapp" ? 18 : 17} />
+        )}
       </span>
     </>
   );

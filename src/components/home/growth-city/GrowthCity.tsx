@@ -1,13 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
-import { growthScenes, growthCityFrames, logoGeometry } from "@/data/growthCity";
+import { Fragment, useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { growthScenes, growthCityFrames, logoGeometry, storyTimeline } from "@/data/growthCity";
 import { site } from "@/data/site";
 import { WhatsAppButton, TextLink } from "@/components/ui/Button";
 import { ArrowDown } from "@/components/ui/Icons";
 import { useLenis } from "@/components/motion/SmoothScroll";
-import { cn } from "@/lib/utils";
+import { cn, pad2 } from "@/lib/utils";
 import { CityRenderer, type Quality } from "./cityRenderer";
 import { FramePlayer } from "./framePlayer";
 
@@ -17,12 +18,19 @@ const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
 
-/** Reveal timing (progress units). */
+/** Finale timing (progress units): the logo is scroll-linked, the type then plays in on its own clock. */
 const T = {
-  logoIn: [0.885, 0.915],
-  logoMove: [0.915, 0.95],
-  text: [0.925, 0.96],
+  dim: [0.84, 0.93],
+  logoIn: [0.855, 0.895],
+  logoMove: [0.89, 0.935],
+  /** The wordmark → tagline → CTA sequence plays past `on` and rewinds below `off`. */
+  titleOn: 0.915,
+  titleOff: 0.9,
 } as const;
+
+/** Scroll-follow: time constant (ms) and top speed (progress / second). */
+const FOLLOW_MS = 150;
+const MAX_SPEED = 0.45;
 
 const storyScenes = growthScenes.slice(0, 7);
 
@@ -37,13 +45,17 @@ export function GrowthCity() {
   const hintRef = useRef<HTMLDivElement>(null);
   const skipRef = useRef<HTMLButtonElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
-  const revealRef = useRef<HTMLDivElement>(null);
-  const wordmarkRef = useRef<HTMLSpanElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
   const counterRef = useRef<HTMLSpanElement>(null);
   const dimRef = useRef<HTMLDivElement>(null);
+  const skippingRef = useRef(false);
   const lenis = useLenis();
   const [reduced, setReduced] = useState(false);
-  const [loading, setLoading] = useState<number | null>(null);
+  // The loader is server-rendered whenever footage exists (CSS hides it without
+  // JS or with reduced motion), so the first paint never flashes the copy.
+  const [loading, setLoading] = useState<number | null>(growthCityFrames ? 0 : null);
+  const [loaderOut, setLoaderOut] = useState(false);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -61,16 +73,120 @@ export function GrowthCity() {
       window.innerWidth < 768;
     const quality: Quality = lowPower ? "low" : "high";
 
+    /* ------------------------------------------------------------ */
+    /* Scene copy choreography (GSAP, time-based, direction-aware)  */
+    /* ------------------------------------------------------------ */
+    let ready = false;
+    let shown = -1;
+
+    const parts = (i: number) => {
+      const el = overlayRefs.current[i];
+      if (!el) return null;
+      return {
+        el,
+        words: el.querySelectorAll<HTMLElement>(".gc-w"),
+        line: el.querySelector<HTMLElement>(".gc-line"),
+        label: el.querySelectorAll<HTMLElement>(".gc-num, .gc-label"),
+        detail: el.querySelector<HTMLElement>(".gc-detail"),
+      };
+    };
+    const killScene = (q: NonNullable<ReturnType<typeof parts>>) =>
+      gsap.killTweensOf([q.el, q.words, q.line, q.label, q.detail]);
+
+    const hideScene = (i: number, dir: number) => {
+      const q = parts(i);
+      if (!q) return;
+      killScene(q);
+      gsap.to(q.words, { yPercent: dir > 0 ? -110 : 110, duration: 0.5, ease: "power3.in", stagger: 0.025 });
+      gsap.to([q.line, q.label, q.detail], { autoAlpha: 0, duration: 0.35, ease: "power2.in" });
+      gsap.set(q.el, { autoAlpha: 0, delay: 0.55 });
+    };
+
+    const showScene = (i: number, dir: number, delay = 0) => {
+      const q = parts(i);
+      if (!q) return;
+      killScene(q);
+      gsap.set(q.el, { autoAlpha: 1 });
+      const tl = gsap.timeline({ delay });
+      tl.fromTo(q.line, { autoAlpha: 1, scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: "expo.out" }, 0)
+        .fromTo(q.label, { autoAlpha: 0, x: -10 }, { autoAlpha: 1, x: 0, duration: 0.6, ease: "power3.out", stagger: 0.06 }, 0.1)
+        .fromTo(q.words, { yPercent: dir > 0 ? 110 : -110 }, { yPercent: 0, duration: 1, ease: "expo.out", stagger: 0.06 }, 0.16)
+        .fromTo(q.detail, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.9, ease: "power3.out" }, 0.5);
+    };
+
+    const setScene = (next: number, prev: number) => {
+      if (next === shown) return;
+      const dir = next > prev ? 1 : -1;
+      // Anything that is neither leaving nor arriving disappears at once (fast flings).
+      storyScenes.forEach((_, i) => {
+        if (i === next || i === shown) return;
+        const q = parts(i);
+        if (q) {
+          killScene(q);
+          gsap.set(q.el, { autoAlpha: 0 });
+        }
+      });
+      const leaving = shown;
+      if (leaving >= 0) hideScene(leaving, dir);
+      if (next < storyScenes.length) showScene(next, dir, leaving >= 0 ? 0.22 : 0.1);
+      shown = next < storyScenes.length ? next : -1;
+    };
+
+    /* ------------------------------------------------------------ */
+    /* Finale: wordmark → tagline → CTA                              */
+    /* ------------------------------------------------------------ */
+    const title = titleRef.current;
+    const cta = ctaRef.current;
+    let finale: gsap.core.Timeline | null = null;
+    let finaleOn = false;
+    let ctaLive = false;
+    if (title && cta && !reduce) {
+      finale = gsap.timeline({
+        paused: true,
+        onUpdate: () => {
+          const live = finale!.progress() > 0.6;
+          if (live !== ctaLive) {
+            ctaLive = live;
+            cta.inert = !live;
+          }
+        },
+      });
+      // `y: 0` overrides the CSS start offset (html.js .gc-rise), which GSAP would otherwise read as y.
+      finale
+        .fromTo(title.querySelector(".gc-mark"), { y: 0, yPercent: 108 }, { y: 0, yPercent: 0, duration: 1.1, ease: "expo.out" }, 0)
+        .fromTo(title.querySelector(".gc-mark"), { letterSpacing: "0.5em" }, { letterSpacing: "0.2em", duration: 1.5, ease: "expo.out" }, 0)
+        .fromTo(title.querySelectorAll(".gc-tag"), { y: 0, yPercent: 110 }, { y: 0, yPercent: 0, duration: 1, ease: "expo.out", stagger: 0.07 }, 0.35)
+        .fromTo(cta.children, { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.9, ease: "power3.out", stagger: 0.12 }, 0.75);
+      cta.inert = true;
+    }
+
+    /* ------------------------------------------------------------ */
+    /* Canvas: footage frames or the code-rendered city              */
+    /* ------------------------------------------------------------ */
     const portraitNow = () => window.innerHeight > window.innerWidth * 1.1;
     let player: FramePlayer | null = null;
     let city: CityRenderer | null = null;
+    let lastActive = -1;
+
+    const markReady = () => {
+      if (ready) return;
+      ready = true;
+      if (lastActive >= 0 && lastActive < storyScenes.length) setScene(lastActive, lastActive - 1);
+    };
+
     if (growthCityFrames && !reduce) {
       const set = portraitNow() ? growthCityFrames.mobile : growthCityFrames.desktop;
-      player = new FramePlayer(canvas, set, growthCityFrames.timeline);
-      setLoading(0);
-      void player.load((n, total) => setLoading(n >= Math.min(total, 24) ? null : n / Math.min(total, 24)));
+      player = new FramePlayer(canvas, set, storyTimeline);
+      void player.load((n, total) => {
+        const need = Math.min(total, 24);
+        if (n >= need) {
+          setLoaderOut(true);
+          markReady();
+        } else setLoading(n / need);
+      });
     } else {
       city = new CityRenderer(canvas, quality);
+      setLoading(null);
     }
 
     let W = 0, H = 0;
@@ -99,8 +215,6 @@ export function GrowthCity() {
     let raf = 0;
     let running = false;
     let last = performance.now();
-    let lastActive = -1;
-    let revealInteractive = false;
     let frameSkip = 0;
 
     const computeTarget = () => {
@@ -112,37 +226,25 @@ export function GrowthCity() {
     const draw = (p: number, now: number) => {
       if (player) player.render(p);
       else city!.render(reduce ? 0.97 : p, now);
-      updateOverlays(reduce ? 1 : p);
+      if (!reduce) updateOverlays(p);
     };
 
     const updateOverlays = (p: number) => {
-      // Scene copy
-      storyScenes.forEach((s, i) => {
-        const el = overlayRefs.current[i];
-        if (!el) return;
-        const [a, b] = s.range;
-        const fin = i === 0 ? 1 : ramp(p, a + 0.004, a + 0.034);
-        const fout = 1 - ramp(p, b - 0.03, b - 0.004);
-        const o = Math.min(fin, fout);
-        el.style.opacity = String(o);
-        el.style.transform = `translate3d(0, ${(1 - fin) * 36 - (1 - fout) * 24}px, 0)`;
-        el.style.visibility = o < 0.01 ? "hidden" : "visible";
-      });
-
-      // Rail, counter & progress
+      // Scene, rail & counter
       let active = growthScenes.findIndex((s) => p >= s.range[0] && p < s.range[1]);
       if (active < 0) active = growthScenes.length - 1;
       if (active !== lastActive) {
         railRefs.current.forEach((li, i) => li?.setAttribute("data-state", i < active ? "past" : i === active ? "active" : "next"));
-        if (counterRef.current) counterRef.current.textContent = String(active + 1).padStart(2, "0");
+        if (counterRef.current) counterRef.current.textContent = pad2(active + 1);
+        if (ready) setScene(active, lastActive);
         lastActive = active;
       }
       if (railFillRef.current) railFillRef.current.style.transform = `scaleY(${p})`;
-      if (railRef.current) railRef.current.style.opacity = String(1 - ramp(p, 0.86, 0.9));
+      if (railRef.current) railRef.current.style.opacity = String(1 - ramp(p, 0.83, 0.86));
       if (barRef.current) barRef.current.style.transform = `scaleX(${p})`;
       if (hintRef.current) hintRef.current.style.opacity = String(1 - ramp(p, 0.004, 0.03));
       if (skipRef.current) {
-        const s = 1 - ramp(p, 0.84, 0.87);
+        const s = 1 - ramp(p, 0.81, 0.84);
         skipRef.current.style.opacity = String(s);
         skipRef.current.style.pointerEvents = s < 0.5 ? "none" : "auto";
       }
@@ -158,7 +260,7 @@ export function GrowthCity() {
           from = { x: place.x, y: place.y, size: place.size };
         } else {
           const s = logoFinal.size * 0.82;
-          from = { x: W / 2 - s / 2, y: logoFinal.y + (logoFinal.size - s) / 2, size: s };
+          from = { x: W / 2 - s / 2, y: logoFinal.y + (logoFinal.size - s) / 2 + 18, size: s };
         }
         const x = lerp(from.x, logoFinal.x, move);
         const y = lerp(from.y, logoFinal.y, move);
@@ -170,20 +272,16 @@ export function GrowthCity() {
 
       // Footage mode: darken the last frames so the logo and wordmark read clearly
       // (the code-rendered city handles its own finale dimming).
-      if (player && dimRef.current) dimRef.current.style.opacity = String(0.72 * ramp(p, 0.88, 0.96));
+      if (player && dimRef.current) dimRef.current.style.opacity = String(0.72 * ramp(p, T.dim[0], T.dim[1]));
 
-      // Wordmark, tagline & CTA
-      const reveal = revealRef.current;
-      if (reveal) {
-        const t = easeInOut(ramp(p, T.text[0], T.text[1]));
-        reveal.style.opacity = String(t);
-        reveal.style.transform = `translate3d(0, ${(1 - t) * 28}px, 0)`;
-        reveal.style.visibility = t < 0.01 ? "hidden" : "visible";
-        if (wordmarkRef.current) wordmarkRef.current.style.letterSpacing = `${lerp(0.62, 0.2, t)}em`;
-        const interactive = t > 0.6;
-        if (interactive !== revealInteractive) {
-          revealInteractive = interactive;
-          reveal.inert = !interactive;
+      // Wordmark, tagline & CTA play in once the logo has landed; scrolling back rewinds them.
+      if (finale) {
+        if (!finaleOn && p >= T.titleOn) {
+          finaleOn = true;
+          finale.timeScale(1).play();
+        } else if (finaleOn && p < T.titleOff) {
+          finaleOn = false;
+          finale.timeScale(1.8).reverse();
         }
       }
     };
@@ -192,10 +290,18 @@ export function GrowthCity() {
       const dt = Math.min(64, now - last);
       last = now;
       computeTarget();
-      // Critically damped follow: smooth on trackpads, catches up fast on flings.
+      // Critically damped follow with a top speed: trackpad flicks and wheel bursts
+      // are smoothed into a steady, cinematic pace (Skip intro lifts the limit).
       const diff = target - current;
-      current += diff * (1 - Math.exp(-dt / 110));
-      if (Math.abs(target - current) < 0.00002) current = target;
+      let step = diff * (1 - Math.exp(-dt / FOLLOW_MS));
+      const maxStep = (skippingRef.current ? 6 : MAX_SPEED) * (dt / 1000);
+      if (step > maxStep) step = maxStep;
+      else if (step < -maxStep) step = -maxStep;
+      current += step;
+      if (Math.abs(target - current) < 0.00002) {
+        current = target;
+        skippingRef.current = false;
+      }
       // Low-power devices: drop to ~30fps while settled.
       const settled = Math.abs(diff) < 0.0005;
       if (!(quality === "low" && settled && (frameSkip++ & 1))) draw(current, now);
@@ -222,6 +328,7 @@ export function GrowthCity() {
     current = target;
     draw(current, performance.now());
     setVisible(true);
+    if (!player) markReady();
 
     let io: IntersectionObserver | null = null;
     if (!reduce) {
@@ -236,6 +343,11 @@ export function GrowthCity() {
       io?.disconnect();
       ro.disconnect();
       player?.destroy();
+      finale?.kill();
+      storyScenes.forEach((_, i) => {
+        const q = parts(i);
+        if (q) killScene(q);
+      });
       document.removeEventListener("visibilitychange", onVis);
     };
   }, []);
@@ -244,6 +356,7 @@ export function GrowthCity() {
     const section = sectionRef.current;
     if (!section) return;
     const end = section.offsetTop + section.offsetHeight - window.innerHeight;
+    skippingRef.current = true;
     if (lenis) lenis.scrollTo(end, { duration: 2.4 });
     else window.scrollTo({ top: end, behavior: "smooth" });
   };
@@ -253,7 +366,7 @@ export function GrowthCity() {
       ref={sectionRef}
       id="growth-city"
       aria-labelledby="gc-title"
-      className={cn("relative bg-ink", reduced ? "h-[100svh]" : "gc-scroll h-[540svh] md:h-[760svh]")}
+      className={cn("relative bg-ink", reduced ? "h-[100svh]" : "gc-scroll h-[620svh] md:h-[880svh]")}
     >
       <p className="sr-only">
         {site.name} is a digital growth agency in Prayagraj, India. This animated story shows how a single business grows
@@ -275,7 +388,7 @@ export function GrowthCity() {
         <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-ink/70 to-transparent" />
         <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-[46%] bg-gradient-to-t from-ink/90 via-ink/35 to-transparent" />
 
-        {/* Scene copy */}
+        {/* Scene copy — each headline rises word by word through its mask */}
         {!reduced && (
           <div className="container-bs pointer-events-none absolute inset-x-0 bottom-[max(5.5rem,11svh)] md:bottom-[13svh]">
             <div className="relative min-h-[11rem] md:min-h-[14rem]">
@@ -285,18 +398,24 @@ export function GrowthCity() {
                   ref={(el) => {
                     overlayRefs.current[i] = el;
                   }}
-                  className="gc-overlay absolute bottom-0 left-0 w-full max-w-[min(100%,58rem)] will-change-transform"
-                  style={{ opacity: i === 0 ? 1 : 0 }}
+                  className="gc-overlay absolute bottom-0 left-0 w-full max-w-[min(100%,58rem)]"
                 >
                   <p className="eyebrow mb-4 flex items-center gap-3 text-green md:mb-5">
-                    <span className="tabular-nums">{String(i + 1).padStart(2, "0")}</span>
-                    <span className="h-px w-8 bg-green/60" aria-hidden />
-                    <span>{s.label}</span>
+                    <span className="gc-num tabular-nums">{pad2(i + 1)}</span>
+                    <span className="gc-line h-px w-8 origin-left bg-green/60" aria-hidden />
+                    <span className="gc-label">{s.label}</span>
                   </p>
                   <p className="font-display-tight text-balance-safe max-w-[10.5em] text-[clamp(2.6rem,6vw,6.2rem)] font-semibold text-paper">
-                    {s.overlay}
+                    {s.overlay.split(" ").map((w, wi, all) => (
+                      <Fragment key={wi}>
+                        <span className="rw">
+                          <span className="gc-w">{w}</span>
+                        </span>
+                        {wi < all.length - 1 && " "}
+                      </Fragment>
+                    ))}
                   </p>
-                  <p className="mt-4 max-w-[34ch] text-[0.95rem] leading-relaxed text-paper/60 md:mt-6 md:text-base">
+                  <p className="gc-detail mt-4 max-w-[34ch] text-[0.95rem] leading-relaxed text-paper/60 md:mt-6 md:text-base">
                     {s.detail}
                   </p>
                 </div>
@@ -376,11 +495,24 @@ export function GrowthCity() {
 
         {/* Loading state (only when streaming pre-rendered footage) */}
         {loading !== null && (
-          <div className="absolute inset-0 z-10 grid place-items-center bg-ink" role="status" aria-live="polite">
+          <div
+            className={cn(
+              "gc-loader absolute inset-0 z-10 grid place-items-center bg-ink transition-opacity duration-700 ease-out",
+              loaderOut && "pointer-events-none opacity-0",
+            )}
+            role="status"
+            aria-live="polite"
+            onTransitionEnd={(e) => {
+              if (loaderOut && e.target === e.currentTarget && e.propertyName === "opacity") setLoading(null);
+            }}
+          >
             <div className="w-48 text-center">
               <p className="eyebrow text-[0.62rem] text-paper/60">Loading the city</p>
               <div className="mt-4 h-px w-full bg-paper/10">
-                <div className="h-full origin-left bg-green transition-transform" style={{ transform: `scaleX(${loading})` }} />
+                <div
+                  className="h-full origin-left bg-green transition-transform duration-500"
+                  style={{ transform: `scaleX(${loaderOut ? 1 : loading})` }}
+                />
               </div>
             </div>
           </div>
@@ -389,7 +521,7 @@ export function GrowthCity() {
         {/* Real logo — aligned to the aerial layout, then settles above the wordmark */}
         <div
           ref={logoRef}
-          className={cn("pointer-events-none absolute left-0 top-0 origin-top-left", reduced && "hidden")}
+          className={cn("gc-logo pointer-events-none absolute left-0 top-0 origin-top-left", reduced && "hidden")}
           style={{ width: logoGeometry.size, height: logoGeometry.size, opacity: 0, visibility: "hidden" }}
         >
           <Image
@@ -397,44 +529,55 @@ export function GrowthCity() {
             alt="BrandSpace logo"
             width={logoGeometry.size}
             height={logoGeometry.size}
+            loading="eager"
             fetchPriority="low"
             className="logo-on-dark h-full w-full"
           />
         </div>
 
         <div
-          ref={revealRef}
           className={cn(
-            "container-bs absolute inset-x-0 text-center",
+            "gc-reveal container-bs pointer-events-none absolute inset-x-0 text-center",
             reduced ? "top-1/2 -translate-y-1/2" : "top-[var(--gc-reveal-top,60svh)]",
           )}
-          style={reduced ? undefined : { opacity: 0, visibility: "hidden" }}
         >
-          {reduced && (
-            <Image
-              src="/brand/brandspace-logo.png"
-              alt="BrandSpace logo"
-              width={200}
-              height={200}
-              loading="eager"
-              className="logo-on-dark mx-auto mb-8 h-40 w-40"
-            />
-          )}
-          <h1 id="gc-title" className="flex flex-col items-center">
-            <span
-              ref={wordmarkRef}
-              className="font-display pl-[0.2em] text-[clamp(2.2rem,6.4vw,5.6rem)] font-semibold uppercase leading-none tracking-[0.2em] text-paper"
-            >
-              BrandSpace
+          {/* Static logo for reduced motion (and no-JS, via CSS) */}
+          <Image
+            src="/brand/brandspace-logo.png"
+            alt="BrandSpace logo"
+            width={200}
+            height={200}
+            loading={reduced ? "eager" : "lazy"}
+            className={cn("gc-static-logo logo-on-dark mx-auto mb-8 h-40 w-40", !reduced && "hidden")}
+          />
+          <h1 ref={titleRef} id="gc-title" className="flex flex-col items-center">
+            <span className="rw">
+              <span className="gc-mark gc-rise font-display pl-[0.2em] text-[clamp(2.2rem,6.4vw,5.6rem)] font-semibold uppercase leading-none tracking-[0.2em] text-paper">
+                BrandSpace
+              </span>
             </span>
             <span className="sr-only"> — </span>
             <span className="mt-4 font-serif text-[clamp(1.35rem,2.6vw,2.2rem)] italic leading-tight text-green md:mt-5">
-              Future of Business Growth.
+              {"Future of Business Growth.".split(" ").map((w, i, all) => (
+                <Fragment key={i}>
+                  <span className="rw">
+                    <span className="gc-tag gc-rise">{w}</span>
+                  </span>
+                  {i < all.length - 1 && " "}
+                </Fragment>
+              ))}
             </span>
           </h1>
-          <div className="mt-8 flex flex-col items-center justify-center gap-5 sm:flex-row sm:gap-8 md:mt-10">
-            <WhatsAppButton size="lg">Start Growing</WhatsAppButton>
-            <TextLink href="#services">Explore what we do</TextLink>
+          <div
+            ref={ctaRef}
+            className="gc-cta pointer-events-auto mt-8 flex flex-col items-center justify-center gap-5 sm:flex-row sm:gap-8 md:mt-10"
+          >
+            <div className="gc-fade">
+              <WhatsAppButton size="lg">Start Growing</WhatsAppButton>
+            </div>
+            <div className="gc-fade">
+              <TextLink href="#services">Explore what we do</TextLink>
+            </div>
           </div>
         </div>
       </div>

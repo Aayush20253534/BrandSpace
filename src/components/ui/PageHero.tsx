@@ -42,13 +42,18 @@ export function Breadcrumbs({
   );
 }
 
-/** Editorial page header used on inner pages. */
+/**
+ * Editorial page header used on inner pages. Every page shares the same
+ * type system; `visual` adds a page-specific composition beside the intro
+ * (tablet and up) so inner pages don't all open the same way.
+ */
 export function PageHero({
   crumbs,
   eyebrow,
   title,
   intro,
   children,
+  visual,
   className,
 }: {
   crumbs: Crumb[];
@@ -56,6 +61,7 @@ export function PageHero({
   title: string;
   intro?: string;
   children?: React.ReactNode;
+  visual?: React.ReactNode;
   className?: string;
 }) {
   return (
@@ -73,12 +79,21 @@ export function PageHero({
           text={title}
           className="font-display-tight mt-6 max-w-[16ch] text-[clamp(3rem,8.4vw,8.4rem)] font-semibold"
         />
-        {intro && (
-          <p data-reveal="up" className="mt-8 max-w-2xl text-lg leading-relaxed text-paper/65 sm:text-xl" style={{ ["--rv-delay" as string]: "200ms" }}>
-            {intro}
-          </p>
-        )}
-        {children}
+        <div className={cn(!!visual && "lg:grid lg:grid-cols-12 lg:items-start lg:gap-10")}>
+          <div className={cn(!!visual && "lg:col-span-6")}>
+            {intro && (
+              <p data-reveal="up" className="mt-8 max-w-2xl text-lg leading-relaxed text-paper/65 sm:text-xl" style={{ ["--rv-delay" as string]: "200ms" }}>
+                {intro}
+              </p>
+            )}
+            {children}
+          </div>
+          {visual && (
+            <div aria-hidden className="relative mt-14 hidden md:block lg:col-span-6 lg:mt-10">
+              {visual}
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );

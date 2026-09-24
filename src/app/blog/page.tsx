@@ -4,8 +4,9 @@ import { readingTime } from "@/lib/blog";
 import { absoluteUrl, breadcrumbSchema, pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { PageHero } from "@/components/ui/PageHero";
-import { PostCard } from "@/components/blog/PostCard";
+import { PostCard, PostGrid } from "@/components/blog/PostCard";
 import { CategoryNav } from "@/components/blog/CategoryNav";
+import { BlogHeroVisual } from "@/components/ui/HeroVisuals";
 import { FinalCta } from "@/components/home/FinalCta";
 
 export const metadata: Metadata = pageMetadata({
@@ -23,7 +24,7 @@ const crumbs = [
 export default function BlogPage() {
   const posts = postsByDate();
   const featured = posts.find((p) => p.featured) ?? posts[0]!;
-  const rest = posts.filter((p) => p.slug !== featured.slug);
+  const rest = posts.filter((p) => p.slug !== featured.slug).map((p) => ({ ...p, minutes: readingTime(p.slug) }));
 
   return (
     <>
@@ -42,6 +43,7 @@ export default function BlogPage() {
         eyebrow="The BrandSpace Blog"
         title={"Ideas for businesses that *want to grow.*"}
         intro="Straight-talking guides on websites, search, social, advertising and branding — written for business owners, not marketers."
+        visual={<BlogHeroVisual />}
       >
         <div className="mt-12">
           <CategoryNav />
@@ -50,20 +52,24 @@ export default function BlogPage() {
 
       <section aria-label="Featured article" className="bg-ink pb-20 text-paper sm:pb-28">
         <div className="container-bs">
-          <h2 className="eyebrow mb-8 text-paper/60">Featured</h2>
-          <PostCard post={featured} minutes={readingTime(featured.slug)} size="lg" eager />
+          <h2 className="eyebrow mb-8 flex items-center gap-3 text-paper/60">
+            <span aria-hidden data-reveal="line" className="h-px w-10 bg-green" />
+            Featured
+          </h2>
+          <PostCard post={featured} minutes={readingTime(featured.slug)} variant="feature" eager />
         </div>
       </section>
 
       <section aria-labelledby="latest-title" className="bg-paper py-24 text-ink sm:py-32">
         <div className="container-bs">
-          <h2 id="latest-title" className="font-display-tight text-[clamp(2.4rem,5vw,4.4rem)] font-semibold">
-            Latest articles
-          </h2>
-          <div className="mt-14 grid gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
-            {rest.map((p) => (
-              <PostCard key={p.slug} post={p} minutes={readingTime(p.slug)} tone="light" />
-            ))}
+          <div className="flex flex-col gap-4 border-b border-ink/10 pb-10 sm:flex-row sm:items-end sm:justify-between">
+            <h2 id="latest-title" className="font-display-tight text-[clamp(2.4rem,5vw,4.4rem)] font-semibold">
+              Latest articles
+            </h2>
+            <p className="max-w-sm text-ink/65">Practical, jargon-free thinking for owners who want their marketing to pull its weight.</p>
+          </div>
+          <div className="mt-14 sm:mt-20">
+            <PostGrid posts={rest} tone="light" />
           </div>
         </div>
       </section>

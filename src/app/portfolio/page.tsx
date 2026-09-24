@@ -4,6 +4,7 @@ import { breadcrumbSchema, pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { PageHero } from "@/components/ui/PageHero";
 import { PortfolioList } from "@/components/portfolio/PortfolioList";
+import { PortfolioHeroVisual } from "@/components/ui/HeroVisuals";
 import { FinalCta } from "@/components/home/FinalCta";
 
 export const metadata: Metadata = pageMetadata({
@@ -40,6 +41,7 @@ export default function PortfolioPage() {
         eyebrow="Portfolio"
         title={"Work that *moves the needle.*"}
         intro="Every project starts with a business problem, not a template. Here’s how we’ve helped hotels, venues, garages, clinics and workforce companies look better, get found and grow."
+        visual={<PortfolioHeroVisual />}
       />
       <section aria-label="Case studies" className="bg-ink pb-24 text-paper sm:pb-32">
         <div className="container-bs">

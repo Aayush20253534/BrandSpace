@@ -1,6 +1,9 @@
+import { unsplash, type Photo } from "@/lib/images";
+
 /**
  * Blog index: categories, authors and article metadata.
  * Article bodies live in src/content/blog/<slug>.md (Markdown).
+ * Covers are topic-matched editorial photography (see src/lib/images.ts).
  *
  * ⚠️ Articles are temporary launch content written by the BrandSpace team
  * brief; review and edit before publishing under a founder's name.
@@ -31,7 +34,7 @@ export type BlogPost = {
   author: string; // team member slug
   publishedAt: string; // ISO date
   updatedAt?: string;
-  cover: { src: string; alt: string };
+  cover: Photo;
   featured?: boolean;
   keywords: string[];
 };
@@ -45,7 +48,12 @@ export const blogPosts: BlogPost[] = [
     category: "google-business-profile",
     author: "dev-raj",
     publishedAt: "2026-09-10",
-    cover: { src: "/blog/google-business-profile-optimization-checklist.webp", alt: "Abstract map illustration with a green location pin and rating stars" },
+    cover: unsplash(
+      "1548345680-f5475ea5df84",
+      "A hand holding a smartphone showing a local business listing on a map, with its star rating and Directions and Call buttons.",
+      { name: "henry perks", href: "https://unsplash.com/photos/person-holding-black-smartphone-BJXAxQ1L7dI" },
+      "50% 45%",
+    ),
     featured: true,
     keywords: ["Google Business Profile", "local SEO", "Google Maps ranking", "reviews"],
   },
@@ -57,7 +65,12 @@ export const blogPosts: BlogPost[] = [
     category: "web-development",
     author: "ayush-kumar-jha",
     publishedAt: "2026-08-21",
-    cover: { src: "/blog/why-your-website-loses-customers-in-3-seconds.webp", alt: "Abstract browser window with a loading speed gauge" },
+    cover: unsplash(
+      "1481487196290-c152efe083f5",
+      "A laptop on a dark desk displaying a restaurant website’s homepage, beside a small cactus and a glass bottle.",
+      { name: "Igor Miske", href: "https://unsplash.com/photos/macbook-pro-showing-vegetable-dish-JVSgcV8_vb4" },
+      "50% 55%",
+    ),
     keywords: ["website speed", "Core Web Vitals", "conversion rate", "web design"],
   },
   {
@@ -68,7 +81,12 @@ export const blogPosts: BlogPost[] = [
     category: "seo",
     author: "ayush-kumar-jha",
     publishedAt: "2026-08-04",
-    cover: { src: "/blog/local-seo-guide-for-small-businesses.webp", alt: "Abstract search bar above ascending ranking bars" },
+    cover: unsplash(
+      "1589820745206-c6b6d3602361",
+      "A busy shopping street in an Indian city at dusk, lined with illuminated shop signs.",
+      { name: "Aman Upadhyay", href: "https://unsplash.com/photos/people-walking-on-street-during-night-time-NAjYWkVPwnc" },
+      "50% 60%",
+    ),
     keywords: ["local SEO", "small business SEO", "search rankings", "Prayagraj"],
   },
   {
@@ -79,7 +97,12 @@ export const blogPosts: BlogPost[] = [
     category: "meta-advertising",
     author: "dev-raj",
     publishedAt: "2026-07-16",
-    cover: { src: "/blog/meta-ads-for-local-businesses.webp", alt: "Abstract concentric target rings with a cursor" },
+    cover: unsplash(
+      "1516251193007-45ef944ab0c6",
+      "A hand holding up a phone showing an Instagram profile among the digital billboards of a busy city square.",
+      { name: "Jakob Owens", href: "https://unsplash.com/photos/smartphone-displaying-instagram-profile-in-city-WUmb_eBrpjs" },
+      "45% 50%",
+    ),
     keywords: ["Meta Ads", "Facebook ads", "Instagram ads", "lead generation"],
   },
   {
@@ -90,7 +113,12 @@ export const blogPosts: BlogPost[] = [
     category: "branding",
     author: "aayush-thakur",
     publishedAt: "2026-06-25",
-    cover: { src: "/blog/what-a-brand-identity-really-includes.webp", alt: "Abstract logo construction grid of circles and guides" },
+    cover: unsplash(
+      "1636247499734-893da2bcfc1c",
+      "A complete brand identity laid out on a table: letterhead, brochures, folders and cards in blue, orange and white.",
+      { name: "MK", href: "https://unsplash.com/photos/a-series-of-brochures-designed-to-look-like-a-building-E6XStmd5wfk" },
+      "50% 50%",
+    ),
     keywords: ["brand identity", "branding", "logo design", "brand guidelines"],
   },
   {
@@ -101,7 +129,12 @@ export const blogPosts: BlogPost[] = [
     category: "social-media",
     author: "dev-raj",
     publishedAt: "2026-06-05",
-    cover: { src: "/blog/social-media-content-system.webp", alt: "Abstract grid of social media post tiles" },
+    cover: unsplash(
+      "1695408247109-3bf125ad0538",
+      "A content creator photographing a woman cooking in a bright kitchen during a social media shoot.",
+      { name: "Wesley Tingey", href: "https://unsplash.com/photos/a-woman-taking-a-picture-of-herself-in-a-kitchen-RAH1ipSQh24" },
+      "60% 40%",
+    ),
     keywords: ["social media strategy", "content calendar", "Instagram", "content pillars"],
   },
   {
@@ -112,7 +145,12 @@ export const blogPosts: BlogPost[] = [
     category: "digital-marketing",
     author: "akhil-kumar",
     publishedAt: "2026-05-14",
-    cover: { src: "/blog/digital-marketing-funnel-that-converts.webp", alt: "Abstract layered marketing funnel" },
+    cover: unsplash(
+      "1529119368496-2dfda6ec2804",
+      "Two people in silhouette pointing at a wall of sticky notes and printouts during a strategy session.",
+      { name: "Startaê Team", href: "https://unsplash.com/photos/person-pointing-white-paper-on-wall-7tXA8xwe4W4" },
+      "50% 45%",
+    ),
     keywords: ["marketing funnel", "digital marketing", "conversion", "customer journey"],
   },
   {
@@ -123,7 +161,12 @@ export const blogPosts: BlogPost[] = [
     category: "business-growth",
     author: "akhil-kumar",
     publishedAt: "2026-04-22",
-    cover: { src: "/blog/digital-growth-flywheel.webp", alt: "Abstract flywheel of connected arcs with a rising growth line" },
+    cover: unsplash(
+      "1551288049-bebda4e38f71",
+      "A laptop showing a website analytics dashboard with bar charts, trend lines and session metrics.",
+      { name: "Luke Chesser", href: "https://unsplash.com/photos/graphs-of-performance-analytics-on-a-laptop-screen-JKUTrJ4vK00" },
+      "50% 40%",
+    ),
     keywords: ["business growth", "digital strategy", "marketing flywheel", "growth"],
   },
 ];

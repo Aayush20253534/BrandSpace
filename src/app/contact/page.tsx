@@ -6,6 +6,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { Breadcrumbs } from "@/components/ui/PageHero";
 import { RevealText } from "@/components/motion/RevealText";
 import { ContactForm } from "@/components/contact/ContactForm";
+import { ContactMotif } from "@/components/contact/ContactMotif";
 import { WhatsAppButton } from "@/components/ui/Button";
 import { ArrowUpRight, Mail, MapPin, Phone, WhatsApp } from "@/components/ui/Icons";
 
@@ -59,6 +60,9 @@ export default function ContactPage() {
 
       <section className="grain relative overflow-hidden bg-ink pb-20 pt-[calc(var(--header-h)+3.5rem)] text-paper sm:pt-[calc(var(--header-h)+5rem)] lg:pb-32">
         <div aria-hidden className="hairline-grid pointer-events-none absolute inset-0 opacity-50 [mask-image:linear-gradient(to_bottom,black,transparent_80%)]" />
+        {/* Understated ambient light and a quiet network motif */}
+        <div aria-hidden className="cm-glow pointer-events-none absolute -left-48 top-[30%] h-[38rem] w-[38rem] rounded-full bg-green/[0.07] blur-3xl" />
+        <ContactMotif className="pointer-events-none absolute right-[-4rem] top-[calc(var(--header-h)+1rem)] hidden w-[34rem] opacity-70 md:block lg:right-[4%] lg:top-[calc(var(--header-h)+0.5rem)] lg:w-[27rem]" />
         <div className="container-bs relative z-[2]">
           <Breadcrumbs items={crumbs} />
           <div className="mt-10 grid gap-14 sm:mt-14 lg:grid-cols-12 lg:gap-12">
@@ -79,8 +83,8 @@ export default function ContactPage() {
               </div>
 
               <ul className="mt-14 divide-y divide-paper/10 border-y border-paper/10">
-                {details.map((d) => (
-                  <li key={d.label}>
+                {details.map((d, i) => (
+                  <li key={d.label} data-reveal="up" style={{ ["--rv-delay" as string]: `${120 + i * 90}ms` }}>
                     <a
                       href={d.href}
                       {...(d.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
@@ -100,8 +104,8 @@ export default function ContactPage() {
               </ul>
             </div>
 
-            <div className="lg:col-span-7">
-              <div className="rounded-[14px] bg-paper p-6 text-ink shadow-[0_40px_120px_-40px_rgba(0,0,0,0.8)] sm:p-10 lg:p-12">
+            <div className="lg:col-span-7 lg:pt-28">
+              <div data-reveal="up" style={{ ["--rv-delay" as string]: "160ms" }} className="rounded-[14px] bg-paper p-6 text-ink shadow-[0_40px_120px_-40px_rgba(0,0,0,0.8)] sm:p-10 lg:p-12">
                 <h2 className="font-display text-[clamp(1.6rem,2.6vw,2.2rem)] font-semibold tracking-[-0.03em]">Send us a project brief</h2>
                 <p className="mt-2 text-ink/60">It takes about two minutes. All fields are required.</p>
                 <div className="mt-8">

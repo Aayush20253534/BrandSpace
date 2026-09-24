@@ -37,7 +37,11 @@ export type Project = {
   highlights: string[];
   /** Service slugs from src/data/services.ts */
   services: string[];
-  palette: { bg: string; fg: string; accent: string };
+  /**
+   * Colours sampled from the live site. `mood` (optional) is the softer tone
+   * used for ambient light behind the project (defaults to `accent`).
+   */
+  palette: { bg: string; fg: string; accent: string; mood?: string };
   /** Desktop screenshot (16:9). `null` renders a designed placeholder frame. */
   preview: { src: string; width: number; height: number; alt: string } | null;
   metrics: {
@@ -84,7 +88,7 @@ export const projects: Project[] = [
       "Local SEO for Prayagraj stays",
     ],
     services: ["web-development-seo", "digital-branding"],
-    palette: { bg: "#0e1726", fg: "#f4efe4", accent: "#d8c29a" },
+    palette: { bg: "#0e1726", fg: "#f4efe4", accent: "#d8c29a", mood: "#d8c29a" },
     preview: {
       src: "/portfolio/casa-de-grande/hero.webp",
       width: 1600,
@@ -133,7 +137,7 @@ export const projects: Project[] = [
       "Mobile-first layout for late-night browsing",
     ],
     services: ["web-development-seo", "social-media-management", "meta-ads"],
-    palette: { bg: "#0b0906", fg: "#f3ecdd", accent: "#c9a45c" },
+    palette: { bg: "#0b0906", fg: "#f3ecdd", accent: "#c9a45c", mood: "#8e2a3a" },
     preview: {
       src: "/portfolio/bar-code/hero.webp",
       width: 1600,
@@ -182,7 +186,7 @@ export const projects: Project[] = [
       "Lead capture for workforce enquiries",
     ],
     services: ["web-development-seo", "digital-branding"],
-    palette: { bg: "#fbf7f7", fg: "#1a1214", accent: "#d3202f" },
+    palette: { bg: "#fbf7f7", fg: "#1a1214", accent: "#d3202f", mood: "#c8323d" },
     preview: {
       src: "/portfolio/zobhunger/hero.webp",
       width: 1600,
@@ -231,7 +235,7 @@ export const projects: Project[] = [
       "Google Business Profile alignment",
     ],
     services: ["web-development-seo", "google-business-profile-optimization", "meta-ads"],
-    palette: { bg: "#0c0d0b", fg: "#f5f7f0", accent: "#b4ef1f" },
+    palette: { bg: "#0c0d0b", fg: "#f5f7f0", accent: "#b4ef1f", mood: "#a6d83a" },
     preview: {
       src: "/portfolio/rovauto/hero.webp",
       width: 1600,
@@ -280,8 +284,13 @@ export const projects: Project[] = [
       "Review-led trust building",
     ],
     services: ["web-development-seo", "google-business-profile-optimization"],
-    palette: { bg: "#f6f1ee", fg: "#1f2a2b", accent: "#d9788f" },
-    preview: null,
+    palette: { bg: "#f5fbfa", fg: "#14201f", accent: "#0b8a80", mood: "#6fc3b8" },
+    preview: {
+      src: "/portfolio/lotus-family-dental/hero.webp",
+      width: 1600,
+      height: 900,
+      alt: "Lotus Family Dental website hero introducing the clinic’s four specialist dentists above the headline ‘Best Dental Clinic in Allahabad for Advanced & Painless Dental Care’, with a teal Book Appointment button.",
+    },
     metrics: {
       status: "placeholder",
       revenue: { label: "Revenue Growth", value: 31, prefix: "+", suffix: "%", context: "New-patient treatment revenue" },
@@ -324,8 +333,13 @@ export const projects: Project[] = [
       "Social content aligned with the website",
     ],
     services: ["web-development-seo", "google-business-profile-optimization", "social-media-management"],
-    palette: { bg: "#eef4f6", fg: "#0f2530", accent: "#2b8fb3" },
-    preview: null,
+    palette: { bg: "#fbf7f2", fg: "#35261f", accent: "#a9452f", mood: "#d99a86" },
+    preview: {
+      src: "/portfolio/eclectic-dental-care/hero.webp",
+      width: 1600,
+      height: 900,
+      alt: "Eclectic Dental Care website hero on a warm cream background with the serif headline ‘Best Dental Clinic in Prayagraj.’ and terracotta ‘Book an appointment’ and WhatsApp buttons.",
+    },
     metrics: {
       status: "placeholder",
       revenue: { label: "Revenue Growth", value: 38, prefix: "+", suffix: "%", context: "Treatment revenue from new patients" },

@@ -9,6 +9,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { InViewObserver } from "@/components/motion/InViewObserver";
 import { CursorLabel } from "@/components/motion/CursorLabel";
+import { ScrollFx } from "@/components/motion/ScrollFx";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -99,6 +100,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <Footer />
         </SmoothScroll>
         <InViewObserver />
+        <ScrollFx />
         <CursorLabel />
       </body>
     </html>

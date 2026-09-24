@@ -12,6 +12,18 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
     qualities: [75, 85],
+    // Editorial photography (src/lib/images.ts) is rendered through <Photo>,
+    // which lets Unsplash's own CDN resize it. If a plain next/image is ever
+    // pointed at one of those photos, only Unsplash photo URLs with our one
+    // fixed query string may pass through Next's optimiser.
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/photo-*",
+        search: "?auto=format&fit=crop&w=2400&q=80",
+      },
+    ],
   },
   async headers() {
     return [

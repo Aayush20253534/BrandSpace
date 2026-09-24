@@ -36,7 +36,7 @@ export function FoundingTeam() {
           {/* Portrait stage (desktop) */}
           <div className="hidden lg:col-span-5 lg:block">
             <div className="sticky top-[calc(var(--header-h)+2rem)]">
-              <div className="relative overflow-hidden rounded-[6px]">
+              <div className="relative overflow-hidden rounded-[6px]" data-fx="parallax" data-fx-amount="2" data-fx-media="lg">
                 {team.map((m, i) => (
                   <div
                     key={m.slug}
@@ -63,7 +63,7 @@ export function FoundingTeam() {
             {team.map((m, i) => {
               const on = i === active;
               return (
-                <li key={m.slug} className="border-b border-paper/10">
+                <li key={m.slug} data-reveal="words" style={{ ["--rv-delay" as string]: `${i * 110}ms` }} className="border-b border-paper/10">
                   <button
                     type="button"
                     onClick={() => setActive(i)}
@@ -81,7 +81,10 @@ export function FoundingTeam() {
                           on ? "translate-x-2 text-paper" : "text-paper/42 group-hover:text-paper/70",
                         )}
                       >
-                        {m.name}
+                        {/* Names rise from behind a mask as the list enters */}
+                        <span className="rw">
+                          <span>{m.name}</span>
+                        </span>
                       </span>
                       <span className={cn("mt-3 block text-sm font-medium uppercase tracking-[0.16em] transition-colors", on ? "text-green" : "text-paper/60")}>
                         {m.role}

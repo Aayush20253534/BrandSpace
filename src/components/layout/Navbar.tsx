@@ -20,6 +20,8 @@ export function Navbar() {
   const lastY = useRef(0);
   const menuRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
+  const navListRef = useRef<HTMLUListElement>(null);
+  const pillRef = useRef<HTMLSpanElement>(null);
 
   // Solid background after leaving the top; hide on scroll down, reveal on scroll up.
   useEffect(() => {
@@ -82,6 +84,30 @@ export function Navbar() {
 
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
+  // Sliding pill: follows the hovered link and settles back on the current page.
+  const movePill = useCallback((link: HTMLElement | null | undefined) => {
+    const pill = pillRef.current;
+    if (!pill) return;
+    if (!link) {
+      pill.style.opacity = "0";
+      return;
+    }
+    pill.style.opacity = "1";
+    pill.style.transform = `translateX(${link.offsetLeft}px)`;
+    pill.style.width = `${link.offsetWidth}px`;
+  }, []);
+  const pillToActive = useCallback(
+    () => movePill(navListRef.current?.querySelector<HTMLElement>("a[aria-current='page']")),
+    [movePill],
+  );
+  useEffect(() => {
+    pillToActive();
+    // Web fonts change link widths once they load.
+    void document.fonts?.ready.then(pillToActive);
+    window.addEventListener("resize", pillToActive);
+    return () => window.removeEventListener("resize", pillToActive);
+  }, [pathname, pillToActive]);
+
   return (
     <>
       <header
@@ -89,7 +115,7 @@ export function Navbar() {
           "fixed inset-x-0 top-0 z-50 transition-[transform,background-color,border-color] duration-500 ease-[var(--ease-out-expo)]",
           hidden && !open ? "-translate-y-full" : "translate-y-0",
           scrolled && !open
-            ? "border-b border-paper/[0.07] bg-ink/75 backdrop-blur-xl backdrop-saturate-150"
+            ? "border-b border-paper/[0.07] bg-ink/85 backdrop-blur-xl backdrop-saturate-150"
             : "border-b border-transparent bg-transparent",
         )}
       >
@@ -97,7 +123,16 @@ export function Navbar() {
           <Logo className="relative z-10" />
 
           <nav aria-label="Primary" className="hidden lg:block">
-            <ul className="flex items-center gap-1 rounded-full border border-paper/[0.08] bg-ink/30 p-1 backdrop-blur-md">
+            <ul
+              ref={navListRef}
+              onMouseLeave={pillToActive}
+              className="relative flex items-center gap-1 rounded-full border border-paper/[0.08] bg-ink/30 p-1 backdrop-blur-md"
+            >
+              <span
+                ref={pillRef}
+                aria-hidden
+                className="pointer-events-none absolute left-0 top-1 h-[calc(100%-0.5rem)] rounded-full bg-paper/[0.09] opacity-0 transition-[transform,width,opacity] duration-500 ease-[var(--ease-out-expo)]"
+              />
               {navigation.map((item) => {
                 const active = isActive(item.href);
                 return (
@@ -105,9 +140,12 @@ export function Navbar() {
                     <Link
                       href={item.href}
                       aria-current={active ? "page" : undefined}
+                      onMouseEnter={(e) => movePill(e.currentTarget)}
+                      onFocus={(e) => movePill(e.currentTarget)}
+                      onBlur={pillToActive}
                       className={cn(
                         "relative block rounded-full px-4 py-2 text-[0.82rem] font-medium transition-colors duration-300",
-                        active ? "bg-paper/[0.09] text-paper" : "text-paper/60 hover:text-paper",
+                        active ? "text-paper" : "text-paper/60 hover:text-paper",
                       )}
                     >
                       {item.label}
@@ -128,10 +166,12 @@ export function Navbar() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Let’s Grow — chat with BrandSpace on WhatsApp (opens in a new tab)"
-                className="group inline-flex h-11 items-center gap-2 whitespace-nowrap rounded-full bg-green pl-3.5 pr-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.1em] text-ink transition-colors hover:bg-green-bright sm:gap-2.5 sm:pl-5 sm:text-[0.78rem] sm:tracking-[0.14em]"
+                className="group relative inline-flex h-11 items-center gap-2 overflow-hidden whitespace-nowrap rounded-full bg-green pl-3.5 pr-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.1em] text-ink sm:gap-2.5 sm:pl-5 sm:text-[0.78rem] sm:tracking-[0.14em]"
               >
-                <span>Let’s Grow</span>
-                <span className="grid h-8 w-8 place-items-center rounded-full bg-ink text-green transition-transform duration-500 group-hover:scale-110">
+                {/* Fill sweeps across on hover */}
+                <span aria-hidden className="absolute inset-0 origin-left scale-x-0 rounded-full bg-green-bright transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover:scale-x-100" />
+                <span className="relative">Let’s Grow</span>
+                <span className="relative grid h-8 w-8 place-items-center rounded-full bg-ink text-green transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover:rotate-[-12deg] group-hover:scale-110">
                   <WhatsApp size={16} />
                 </span>
               </a>
@@ -166,7 +206,14 @@ export function Navbar() {
         </div>
       </header>
 
-      {/* Mobile / tablet menu */}
+      {/* Mobile / tablet menu: a green curtain leads, the ink panel follows */}
+      <div
+        aria-hidden
+        className={cn(
+          "pointer-events-none fixed inset-0 z-40 bg-green transition-[clip-path] duration-[650ms] ease-[var(--ease-in-out-quart)] lg:hidden",
+          open ? "[clip-path:inset(0_0_0_0)] delay-0" : "[clip-path:inset(0_0_100%_0)] delay-[120ms]",
+        )}
+      />
       <div
         id="mobile-menu"
         ref={menuRef}
@@ -177,7 +224,7 @@ export function Navbar() {
         inert={!open}
         className={cn(
           "fixed inset-0 z-40 flex flex-col bg-ink transition-[clip-path] duration-700 ease-[var(--ease-in-out-quart)] lg:hidden",
-          open ? "[clip-path:inset(0_0_0_0)]" : "pointer-events-none [clip-path:inset(0_0_100%_0)]",
+          open ? "[clip-path:inset(0_0_0_0)] delay-[110ms]" : "pointer-events-none [clip-path:inset(0_0_100%_0)] delay-0",
         )}
       >
         <div className="hairline-grid pointer-events-none absolute inset-0 opacity-40" aria-hidden />
@@ -192,11 +239,11 @@ export function Navbar() {
                     onClick={close}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "flex items-baseline gap-4 py-1.5 font-display text-[clamp(2.6rem,11vw,4.5rem)] font-semibold leading-[1] tracking-[-0.045em] transition-[transform,color] duration-700 ease-[var(--ease-out-expo)]",
-                      open ? "translate-y-0" : "translate-y-full",
+                      "flex items-baseline gap-4 py-1.5 font-display text-[clamp(2.6rem,11vw,4.5rem)] font-semibold leading-[1] tracking-[-0.045em] transition-[transform,color,opacity] duration-[900ms] ease-[var(--ease-out-expo)]",
+                      open ? "translate-y-0 opacity-100" : "translate-y-full opacity-0",
                       active ? "text-green" : "text-paper",
                     )}
-                    style={{ transitionDelay: open ? `${120 + i * 60}ms` : "0ms" }}
+                    style={{ transitionDelay: open ? `${260 + i * 70}ms` : "0ms" }}
                   >
                     <span className="font-sans text-xs font-medium tracking-[0.2em] text-paper/65">0{i + 1}</span>
                     {item.label}
@@ -208,8 +255,8 @@ export function Navbar() {
         </nav>
         <div
           className={cn(
-            "container-bs relative grid gap-6 border-t border-paper/10 py-8 transition-opacity duration-700 sm:grid-cols-2",
-            open ? "opacity-100 delay-500" : "opacity-0",
+            "container-bs relative grid gap-6 border-t border-paper/10 py-8 transition-[opacity,transform] duration-700 ease-[var(--ease-out-expo)] sm:grid-cols-2",
+            open ? "translate-y-0 opacity-100 delay-[650ms]" : "translate-y-3 opacity-0",
           )}
         >
           <div className="space-y-2 text-sm text-paper/70">

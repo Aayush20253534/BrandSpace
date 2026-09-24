@@ -1,39 +1,51 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { pillars } from "@/data/approach";
 import { cn, pad2 } from "@/lib/utils";
 import { RevealText } from "@/components/motion/RevealText";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 
-/** Ascending path with five nodes — lights up as each pillar is reached. */
-function GrowthPath({ active }: { active: number }) {
-  const nodes = [
-    { x: 20, y: 250 },
-    { x: 95, y: 214 },
-    { x: 165, y: 196 },
-    { x: 232, y: 128 },
-    { x: 300, y: 40 },
-  ];
-  const d = "M20 250 C60 240 70 218 95 214 S140 200 165 196 S210 150 232 128 S280 70 300 40";
-  const progress = (active + 1) / nodes.length;
+gsap.registerPlugin(ScrollTrigger);
+
+const NODES = [
+  { x: 20, y: 250 },
+  { x: 95, y: 214 },
+  { x: 165, y: 196 },
+  { x: 232, y: 128 },
+  { x: 300, y: 40 },
+];
+const PATH = "M20 250 C60 240 70 218 95 214 S140 200 165 196 S210 150 232 128 S280 70 300 40";
+
+/**
+ * Ascending path with five nodes. On desktop the line is drawn by scroll
+ * progress through the principles (not per step), nodes light as the line
+ * reaches them, and the active node pulses once when it takes over.
+ */
+function GrowthPath({ active, pathRef }: { active: number; pathRef: React.RefObject<SVGPathElement | null> }) {
   return (
-    <svg viewBox="0 0 320 280" className="h-auto w-full" aria-hidden>
-      <path d={d} fill="none" stroke="#f3f4ef" strokeOpacity="0.1" strokeWidth="2" />
+    <svg viewBox="0 0 320 280" className="h-auto w-full overflow-visible" aria-hidden>
+      <path d={PATH} fill="none" stroke="#f3f4ef" strokeOpacity="0.1" strokeWidth="2" />
       <path
-        d={d}
+        ref={pathRef}
+        d={PATH}
         fill="none"
         stroke="#5bd17b"
         strokeWidth="2.5"
         strokeLinecap="round"
         pathLength={1}
         strokeDasharray="1"
-        style={{ strokeDashoffset: 1 - progress, transition: "stroke-dashoffset 1.2s cubic-bezier(0.16,1,0.3,1)" }}
+        className="gp-line"
+        style={{ ["--gp-step" as string]: 1 - (active + 1) / NODES.length }}
       />
-      {nodes.map((n, i) => (
-        <g key={i} style={{ transition: "opacity .6s", opacity: i <= active ? 1 : 0.35 }}>
-          <circle cx={n.x} cy={n.y} r={i === active ? 12 : 7} fill={i <= active ? "#5bd17b" : "#1c221e"} style={{ transition: "r .6s" }} />
-          {i === active && <circle cx={n.x} cy={n.y} r="20" fill="none" stroke="#5bd17b" strokeOpacity="0.35" />}
+      {NODES.map((n, i) => (
+        <g key={i} data-gp-node={i} data-step-reached={i <= active ? "" : undefined} className="gp-node">
+          <circle cx={n.x} cy={n.y} r={i === active ? 11 : 7} className="gp-dot" />
+          {i === active && (
+            <circle key={`pulse-${active}`} cx={n.x} cy={n.y} r="11" className="gp-pulse" fill="none" stroke="#5bd17b" strokeWidth="1.5" />
+          )}
         </g>
       ))}
     </svg>
@@ -43,7 +55,11 @@ function GrowthPath({ active }: { active: number }) {
 export function WhyBrandSpace() {
   const [active, setActive] = useState(0);
   const blockRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const listRef = useRef<HTMLDivElement>(null);
+  const pathRef = useRef<SVGPathElement>(null);
+  const svgWrapRef = useRef<HTMLDivElement>(null);
 
+  // Which principle owns the middle of the screen.
   useEffect(() => {
     const io = new IntersectionObserver(
       (entries) => {
@@ -57,9 +73,57 @@ export function WhyBrandSpace() {
     return () => io.disconnect();
   }, []);
 
+  // Desktop: draw the path continuously with scroll progress through the list.
+  useEffect(() => {
+    const list = listRef.current;
+    const path = pathRef.current;
+    const wrap = svgWrapRef.current;
+    if (!list || !path || !wrap) return;
+    const mm = gsap.matchMedia();
+    mm.add("(min-width: 1024px) and (prefers-reduced-motion: no-preference)", () => {
+      // Where each node sits along the path (0 → 1), measured once.
+      const total = path.getTotalLength();
+      const fractions = NODES.map((n) => {
+        let best = 0;
+        let bestD = Infinity;
+        for (let s = 0; s <= 200; s++) {
+          const pt = path.getPointAtLength((s / 200) * total);
+          const d = Math.hypot(pt.x - n.x, pt.y - n.y);
+          if (d < bestD) {
+            bestD = d;
+            best = s / 200;
+          }
+        }
+        return best;
+      });
+      const nodes = Array.from(wrap.querySelectorAll<SVGGElement>("[data-gp-node]"));
+      wrap.setAttribute("data-scrubbed", "");
+      const st = ScrollTrigger.create({
+        trigger: list,
+        start: "top 55%",
+        end: "bottom 60%",
+        scrub: 0.6,
+        onUpdate: (self) => {
+          const p = self.progress;
+          path.style.setProperty("--gp-p", String(1 - p));
+          nodes.forEach((g, i) => g.toggleAttribute("data-reached", p >= fractions[i]! - 0.004));
+        },
+      });
+      return () => {
+        st.kill();
+        wrap.removeAttribute("data-scrubbed");
+        path.style.removeProperty("--gp-p");
+        nodes.forEach((g) => g.removeAttribute("data-reached"));
+      };
+    });
+    return () => mm.revert();
+  }, []);
+
   return (
     <section aria-labelledby="why-title" className="grain relative overflow-clip bg-ink-2 py-24 text-paper sm:py-32">
-      <div className="hairline-grid pointer-events-none absolute inset-0 opacity-50 [mask-image:radial-gradient(ellipse_at_top,black,transparent_70%)]" aria-hidden />
+      <div aria-hidden className="pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_at_top,black,transparent_70%)]">
+        <div className="hairline-grid absolute inset-x-0 -inset-y-[10%] opacity-50" data-fx="parallax" data-fx-amount="5" data-fx-trigger="parent" />
+      </div>
       <div className="container-bs relative z-[2]">
         <div className="max-w-4xl">
           <SectionLabel index="03">Why BrandSpace</SectionLabel>
@@ -84,22 +148,30 @@ export function WhyBrandSpace() {
                   <li
                     key={p.title}
                     className={cn(
-                      "font-display-tight text-[clamp(2.4rem,4.4vw,4.4rem)] font-semibold transition-[color,transform] duration-700 ease-[var(--ease-out-expo)]",
+                      "flex items-center gap-4 font-display-tight text-[clamp(2.4rem,4.4vw,4.4rem)] font-semibold transition-[color,translate,opacity] duration-[900ms] ease-[var(--ease-out-expo)]",
                       i === active ? "translate-x-3 text-green" : i < active ? "text-paper/60" : "text-paper/25",
                     )}
                   >
-                    {p.title}
+                    <span
+                      className={cn(
+                        "h-[3px] w-10 origin-left rounded-full bg-green transition-transform duration-[900ms] ease-[var(--ease-out-expo)]",
+                        i === active ? "scale-x-100" : "scale-x-0",
+                      )}
+                    />
+                    <span className={cn("transition-[translate] duration-[900ms] ease-[var(--ease-out-expo)]", i !== active && "-translate-x-14")}>
+                      {p.title}
+                    </span>
                   </li>
                 ))}
               </ol>
-              <div className="mt-10 w-[min(22rem,70%)]">
-                <GrowthPath active={active} />
+              <div ref={svgWrapRef} className="gp mt-10 w-[min(22rem,70%)]">
+                <GrowthPath active={active} pathRef={pathRef} />
               </div>
             </div>
           </div>
 
           {/* Pillars */}
-          <div className="lg:col-span-6">
+          <div ref={listRef} className="lg:col-span-6">
             {pillars.map((p, i) => (
               <div
                 key={p.title}
@@ -116,14 +188,23 @@ export function WhyBrandSpace() {
                 </p>
                 <h3
                   data-reveal="up"
+                  style={{ ["--rv-delay" as string]: "70ms" }}
                   className="font-display-tight mt-5 text-[clamp(2.3rem,8vw,3.2rem)] font-semibold lg:sr-only"
                 >
                   {p.title}
                 </h3>
-                <p data-reveal="up" className="mt-4 font-serif text-[clamp(1.7rem,2.8vw,2.6rem)] italic leading-[1.15] text-paper lg:mt-6">
+                <p
+                  data-reveal="up"
+                  style={{ ["--rv-delay" as string]: "140ms" }}
+                  className="mt-4 font-serif text-[clamp(1.7rem,2.8vw,2.6rem)] italic leading-[1.15] text-paper lg:mt-6"
+                >
                   {p.line}
                 </p>
-                <p data-reveal="up" className="mt-6 max-w-lg text-[1.05rem] leading-relaxed text-paper/60">
+                <p
+                  data-reveal="up"
+                  style={{ ["--rv-delay" as string]: "220ms" }}
+                  className="mt-6 max-w-lg text-[1.05rem] leading-relaxed text-paper/60"
+                >
                   {p.body}
                 </p>
               </div>
