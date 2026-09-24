@@ -65,7 +65,8 @@ export function GrowthCity() {
     let player: FramePlayer | null = null;
     let city: CityRenderer | null = null;
     if (growthCityFrames && !reduce) {
-      player = new FramePlayer(canvas, portraitNow() ? growthCityFrames.mobile : growthCityFrames.desktop);
+      const set = portraitNow() ? growthCityFrames.mobile : growthCityFrames.desktop;
+      player = new FramePlayer(canvas, set, growthCityFrames.timeline);
       setLoading(0);
       void player.load((n, total) => setLoading(n >= Math.min(total, 24) ? null : n / Math.min(total, 24)));
     } else {

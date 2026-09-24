@@ -1,4 +1,4 @@
-import type { FrameSet } from "@/data/growthCity";
+import type { FrameSet, FrameTimeline } from "@/data/growthCity";
 
 /**
  * Scroll-scrubbed image sequence player for pre-rendered cinematic footage.
@@ -19,6 +19,7 @@ export class FramePlayer {
   constructor(
     private canvas: HTMLCanvasElement,
     private set: FrameSet,
+    private timeline?: FrameTimeline,
   ) {
     const ctx = canvas.getContext("2d", { alpha: false });
     if (!ctx) throw new Error("Canvas 2D unavailable");
@@ -101,10 +102,23 @@ export class FramePlayer {
     this.ctx.globalAlpha = 1;
   }
 
+  /** Frame position for progress `p`: along the timeline when there is one, else linear. */
+  private frameAt(p: number) {
+    const last = this.set.count - 1;
+    const tl = this.timeline;
+    if (!tl || tl.length < 2) return p * last;
+    let i = 1;
+    while (i < tl.length - 1 && p > tl[i]![0]) i++;
+    const [p0, f0] = tl[i - 1]!;
+    const [p1, f1] = tl[i]!;
+    const t = p1 > p0 ? Math.min(1, Math.max(0, (p - p0) / (p1 - p0))) : 1;
+    return Math.min(last, Math.max(0, f0 + (f1 - f0) * t));
+  }
+
   render(p: number) {
     const ctx = this.ctx;
     ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
-    const f = p * (this.set.count - 1);
+    const f = this.frameAt(p);
     const i0 = Math.floor(f);
     const a = this.nearest(i0, -1);
     const b = this.nearest(Math.min(this.set.count - 1, i0 + 1), 1);

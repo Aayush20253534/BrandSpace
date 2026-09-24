@@ -24,6 +24,9 @@
 .DS_Store
 *.pem
 
+# growth city import scratch (raw clips; re-download via docs/growth-city.md)
+/assets/growth-city/
+
 # debug
 npm-debug.log*
 yarn-debug.log*

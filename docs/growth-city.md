@@ -29,22 +29,24 @@ LONELY BUSINESS → BRANDING → WEBSITE → SEO → SOCIAL → ADS + CUSTOMERS 
 
 ## Two render modes
 
-1. **Code-rendered city (active now).** Every element is a pure function of `p`, so it is exact in
-   both directions and weighs nothing to download. The aerial road layout is measured from the logo:
+1. **Code-rendered city.** Every element is a pure function of `p`, so it is exact in both
+   directions and weighs nothing to download. The aerial road layout is measured from the logo:
    the shop sits exactly where the logo's play button is, and the camera lands the real logo on top
-   of it.
-2. **Pre-rendered footage.** When `src/data/growthCityFrames.json` contains a manifest, the canvas
-   plays a WebP frame sequence instead. Frames load progressively (every 16th, 8th, 4th…), so the
-   story is scrubbable almost immediately, and adjacent frames are cross-faded for sub-frame
-   smoothness. A minimal loader shows until the first keyframes arrive. Desktop uses 16:9 frames;
-   portrait devices use a centre-cropped 9:16 set so the central business stays in frame.
+   of it. It is used whenever the manifest is `null`, and reduced-motion users always get its
+   static aerial.
+2. **Pre-rendered footage (active now).** When `src/data/growthCityFrames.json` contains a
+   manifest, the canvas plays a WebP frame sequence instead. Frames load progressively (every
+   16th, 8th, 4th…), so the story is scrubbable almost immediately, and adjacent frames are
+   cross-faded for sub-frame smoothness. A minimal loader shows until the first keyframes arrive.
+   Desktop uses 16:9 frames; portrait devices use a centre-cropped 9:16 set so the central business
+   stays in frame. The manifest's `timeline` maps scroll progress to frames piecewise-linearly, so
+   each clip can take its own share of the scroll and its story beats land under the matching copy.
 
 ## Generating the footage with Higgsfield (≤ 50 credits)
 
-> **Network note:** the Claude Code cloud environment that built this site could not reach
-> Higgsfield's output CDN (`d8j0ntlcm91z4.cloudfront.net`), so no footage was generated or
-> downloaded yet. Allow that host in the environment's network settings, or run the steps below
-> from any machine with normal internet access.
+> **Status:** generated and imported on 2026-09-24 for 37.5 credits (no re-rolls). See
+> [Generated footage](#generated-footage-2026-09-24). Downloading results needs network access to
+> Higgsfield's output CDN (`d8j0ntlcm91z4.cloudfront.net`).
 
 Only the camera journey itself is generated. Typography, overlays, transitions, the logo reveal and
 all UI stay in code.
@@ -53,10 +55,10 @@ all UI stay in code.
 
 | Step | Model | Qty | Credits |
 | --- | --- | --- | --- |
-| Keyframes K1–K5 | `gpt_image_2_5` (16:9, 1k) | 5 | ≈ 2.5–5 |
+| Keyframes K1–K5 | `gpt_image_2_5` (16:9, 1k, quality high) | 5 | 7.5 |
 | Transitions V1–V4 (start + end frame, 5 s, sound off) | `kling3_0` std | 4 | 30 |
-| Contingency (one keyframe + one clip re-roll) | | | ≈ 8.5 |
-| **Total** | | | **≈ 41–44** |
+| Contingency (one keyframe + one clip re-roll) | | | 9 (not needed) |
+| **Total spent** | | | **37.5** |
 
 (`seedance_2_0_mini` at 5 credits per clip is a cheaper alternative for the transitions: ≈ 25 total.)
 
@@ -102,6 +104,36 @@ all UI stay in code.
 - **V4 K4→K5:** the camera keeps pulling back and rises into a perfectly top-down aerial of the
   finished city; motion eases out and holds.
 
+### Generated footage (2026-09-24)
+
+All keyframes: `gpt_image_2_5`, variant `flare`, `quality: high`, `1k`, 16:9 (1344×752), 1.5 credits
+each, each one using the previous keyframe as `image_references`. All clips: `kling3_0`, `std`,
+5 s, `sound: off`, 16:9 (1280×716, 24 fps), 7.5 credits each, previous/next keyframe as
+`start_image`/`end_image`. Total 37.5 credits.
+
+| Asset | Higgsfield job | Result |
+| --- | --- | --- |
+| K1 | `3b0efdc2-28ae-4b57-9495-aa2e2ffc9c6d` | Lonely shop, lamp, starry green-black sky |
+| K2 | `f128c053-6d44-4045-8785-577470b187b7` | Same framing; awning, blank green sign, website hologram, light-lines |
+| K3 | `d086cb02-91db-4c76-80b1-53cecd662c77` | Higher; roads, three plazas with map pins, billboards |
+| K4 | `9b768013-922a-4423-aecc-f7f3394898bb` | ~45° aerial; traffic, people, dozens of buildings |
+| K5 | `7b8542e0-cfa6-41d5-be8c-b8fba407db89` | Top-down; triangular park district + three plaza rings (echoes the logo) |
+| V1 | `82bc5ca0-7134-4ced-a778-dd393245c044` | Locked-off transformation of the shop |
+| V2 | `6ede11f2-5dbf-4ef7-aa11-2a14650bb640` | Crane up and back; roads, pins, billboards |
+| V3 | `e1552338-81b2-4bbf-8953-bd5596df6ef9` | Crane continues; the city fills in |
+| V4 | `db27b56a-2b54-4f9c-a7bd-896fae6699ef` | Tilts to top-down by ~2.7 s, then holds |
+
+Prompt notes, on top of the prompts above:
+
+- K2 is effectively an edit of K1 (same camera), so V1 is a near-locked shot of the shop
+  transforming in place rather than a push-in; V2–V4 then form one continuous crane up to top-down.
+- K3–K5 keep the shop at the centre of the frame (so it stays inside the 9:16 mobile crop) and
+  place the three plazas to its right in the same zig-zag every time; K3 and K4 keep the website
+  hologram above the shop and K4 already starts the triangular park, so V2–V4 read as camera moves
+  rather than morphs. The hologram fades out in V4 as the view turns top-down.
+- Kling suggested its "IN THE DARK" preset for V1; it was declined (`declined_preset_id`) to keep
+  the planned start/end-frame transition.
+
 ### Import
 
 ```bash
@@ -114,9 +146,30 @@ npm run build
 ```
 
 The script drops each clip's duplicate first frame (shared keyframes), writes
-`public/growth-city/{desktop,mobile}/frame_XXXX.webp` and the manifest. With the defaults
-(12 fps, WebP q68) four 5-second clips come to roughly 240 frames and 6–9 MB, streamed
-progressively. Run `node scripts/growth-city-frames.mjs --reset` to switch back to the coded city.
+`public/growth-city/{desktop,mobile}/frame_XXXX.webp` and the manifest. URLs are downloaded to
+`assets/growth-city/raw/` (git-ignored). Frame URLs in the manifest carry a content hash (`?v=…`)
+because `/growth-city/*` is served with an immutable cache header, so a re-import never shows
+returning visitors stale frames. Run `node scripts/growth-city-frames.mjs --reset` to switch back to
+the coded city.
 
-After importing, compare the final aerial frame with the logo reveal. The logo fades in centred over
-the footage, which is dimmed automatically for legibility.
+`STOPS` sets the scroll progress at each clip boundary (default: evenly spaced). The current
+footage was imported with the command below: V1 gets the first 35% of the scroll so the awning
+lands under "Build your identity" and the website under "Create your presence", V2's pins and
+billboards land under "Get discovered" and "Reach the right people", and V4 reaches its top-down
+hold (p ≈ 0.88) just as the dimming and logo reveal begin.
+
+```bash
+STOPS=0,0.35,0.5,0.75,1 node scripts/growth-city-frames.mjs \
+  https://d8j0ntlcm91z4.cloudfront.net/user_3Jh1FIVe6vC92KuQLB0zhEKSirw/hf_20260924_093425_82bc5ca0-7134-4ced-a778-dd393245c044.mp4 \
+  https://d8j0ntlcm91z4.cloudfront.net/user_3Jh1FIVe6vC92KuQLB0zhEKSirw/hf_20260924_093351_6ede11f2-5dbf-4ef7-aa11-2a14650bb640.mp4 \
+  https://d8j0ntlcm91z4.cloudfront.net/user_3Jh1FIVe6vC92KuQLB0zhEKSirw/hf_20260924_093746_e1552338-81b2-4bbf-8953-bd5596df6ef9.mp4 \
+  https://d8j0ntlcm91z4.cloudfront.net/user_3Jh1FIVe6vC92KuQLB0zhEKSirw/hf_20260924_093813_db27b56a-2b54-4f9c-a7bd-896fae6699ef.mp4
+```
+
+With the defaults (12 fps, WebP q68) that is 241 frames: 14.6 MB for desktop (1280×716, dense city
+frames reach ~100 KB each) and 5.1 MB for mobile (403×716). Scrubbing starts after the first
+progressive pass (~1 MB desktop, ~0.35 MB mobile); the rest streams in the background. Lowering
+`QUALITY` barely helps (q56 saves ~13%): the weight is the city's fine light detail.
+
+The logo fades in centred over the final aerial, which is dimmed automatically for legibility; with
+this footage its play triangle lands over the shop's triangular park district.

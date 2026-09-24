@@ -91,7 +91,10 @@ export type FrameSet = {
   height: number;
 };
 
-export const growthCityFrames = framesManifest as { desktop: FrameSet; mobile: FrameSet } | null;
+/** Scroll progress → frame index at each clip boundary, piecewise-linear in between. */
+export type FrameTimeline = [progress: number, frame: number][];
+
+export const growthCityFrames = framesManifest as { desktop: FrameSet; mobile: FrameSet; timeline?: FrameTimeline } | null;
 
 /**
  * Geometry linking the supplied logo artwork to the city layout, so the

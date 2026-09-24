@@ -1,1 +1,38 @@
-null
+{
+  "desktop": {
+    "pattern": "/growth-city/desktop/frame_{i}.webp?v=964ce3ba",
+    "count": 241,
+    "pad": 4,
+    "width": 1280,
+    "height": 716
+  },
+  "mobile": {
+    "pattern": "/growth-city/mobile/frame_{i}.webp?v=964ce3ba",
+    "count": 241,
+    "pad": 4,
+    "width": 403,
+    "height": 716
+  },
+  "timeline": [
+    [
+      0,
+      0
+    ],
+    [
+      0.35,
+      60
+    ],
+    [
+      0.5,
+      120
+    ],
+    [
+      0.75,
+      180
+    ],
+    [
+      1,
+      240
+    ]
+  ]
+}
