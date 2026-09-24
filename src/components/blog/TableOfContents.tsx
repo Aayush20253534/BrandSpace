@@ -23,7 +23,7 @@ export function TableOfContents({ items }: { items: TocItem[] }) {
   if (!items.length) return null;
   return (
     <nav aria-label="On this page">
-      <p className="eyebrow text-ink/45">On this page</p>
+      <p className="eyebrow text-ink/65">On this page</p>
       <ol className="mt-5 space-y-1 border-l border-ink/10">
         {items.map((item) => (
           <li key={item.id}>
@@ -31,7 +31,7 @@ export function TableOfContents({ items }: { items: TocItem[] }) {
               href={`#${item.id}`}
               className={cn(
                 "-ml-px block border-l py-1.5 pl-4 text-[0.88rem] leading-snug transition-colors",
-                active === item.id ? "border-green-deep font-medium text-ink" : "border-transparent text-ink/50 hover:text-ink",
+                active === item.id ? "border-green-deep font-medium text-ink" : "border-transparent text-ink/65 hover:text-ink",
               )}
             >
               {item.text}

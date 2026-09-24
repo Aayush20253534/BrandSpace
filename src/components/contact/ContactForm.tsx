@@ -137,7 +137,7 @@ export function ContactForm() {
     );
   }
 
-  const field = "peer w-full rounded-[6px] border bg-white/70 px-4 py-3.5 text-[1rem] text-ink outline-none transition-[border-color,box-shadow] placeholder:text-ink/35 focus:border-ink focus:bg-white focus:shadow-[0_0_0_3px_rgba(91,209,123,0.35)]";
+  const field = "peer w-full rounded-[6px] border bg-white/70 px-4 py-3.5 text-[1rem] text-ink outline-none transition-[border-color,box-shadow] placeholder:text-ink/50 focus:border-ink focus:bg-white focus:shadow-[0_0_0_3px_rgba(91,209,123,0.35)]";
   const border = (k: keyof Values) => (show(k) ? "border-[#c0392b]" : "border-ink/15 hover:border-ink/35");
 
   const err = (k: keyof Values) =>
@@ -206,7 +206,7 @@ export function ContactForm() {
             Service required <span className="text-green-deep" aria-hidden>*</span>
           </label>
           <div className="relative">
-            <select id="service" name="service" required value={values.service} onChange={(e) => set("service", e.target.value)} onBlur={() => blur("service")} aria-invalid={!!show("service")} aria-describedby={describe("service")} className={cn(field, border("service"), "appearance-none pr-10", !values.service && "text-ink/40")}>
+            <select id="service" name="service" required value={values.service} onChange={(e) => set("service", e.target.value)} onBlur={() => blur("service")} aria-invalid={!!show("service")} aria-describedby={describe("service")} className={cn(field, border("service"), "appearance-none pr-10", !values.service && "text-ink/60")}>
               <option value="" disabled>
                 Choose a service
               </option>
@@ -216,7 +216,7 @@ export function ContactForm() {
                 </option>
               ))}
             </select>
-            <ArrowRight size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 rotate-90 text-ink/40" />
+            <ArrowRight size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 rotate-90 text-ink/60" />
           </div>
           {err("service")}
         </div>
@@ -225,7 +225,7 @@ export function ContactForm() {
             Budget range <span className="text-green-deep" aria-hidden>*</span>
           </label>
           <div className="relative">
-            <select id="budget" name="budget" required value={values.budget} onChange={(e) => set("budget", e.target.value)} onBlur={() => blur("budget")} aria-invalid={!!show("budget")} aria-describedby={describe("budget")} className={cn(field, border("budget"), "appearance-none pr-10", !values.budget && "text-ink/40")}>
+            <select id="budget" name="budget" required value={values.budget} onChange={(e) => set("budget", e.target.value)} onBlur={() => blur("budget")} aria-invalid={!!show("budget")} aria-describedby={describe("budget")} className={cn(field, border("budget"), "appearance-none pr-10", !values.budget && "text-ink/60")}>
               <option value="" disabled>
                 Choose a range
               </option>
@@ -235,7 +235,7 @@ export function ContactForm() {
                 </option>
               ))}
             </select>
-            <ArrowRight size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 rotate-90 text-ink/40" />
+            <ArrowRight size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 rotate-90 text-ink/60" />
           </div>
           {err("budget")}
         </div>
@@ -244,7 +244,7 @@ export function ContactForm() {
             Project details <span className="text-green-deep" aria-hidden>*</span>
           </label>
           <textarea id="details" name="details" rows={5} required value={values.details} onChange={(e) => set("details", e.target.value)} onBlur={() => blur("details")} aria-invalid={!!show("details")} aria-describedby={describe("details", "details-hint")} className={cn(field, border("details"), "min-h-[9rem] resize-y")} placeholder="Tell us about your business, your goals and what you’d like help with." />
-          <p id="details-hint" className="mt-2 text-[0.78rem] text-ink/45">
+          <p id="details-hint" className="mt-2 text-[0.78rem] text-ink/65">
             What does success look like in six months? Any deadlines or links we should see?
           </p>
           {err("details")}
@@ -297,7 +297,7 @@ export function ContactForm() {
             )}
           </span>
         </button>
-        <p className="text-[0.82rem] text-ink/50">
+        <p className="text-[0.82rem] text-ink/65">
           Or{" "}
           <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="font-medium text-green-deep underline-offset-4 hover:underline">
             message us on WhatsApp

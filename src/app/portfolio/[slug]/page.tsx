@@ -76,7 +76,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/portfolio/[s
           <Breadcrumbs items={crumbs} />
           <div className="mt-10 grid gap-10 sm:mt-14 lg:grid-cols-12 lg:items-end">
             <div className="lg:col-span-8">
-              <p data-reveal="up" className="eyebrow flex items-center gap-3 text-paper/55">
+              <p data-reveal="up" className="eyebrow flex items-center gap-3 text-paper/65">
                 <span className="text-green">Case {pad2(index + 1)}</span>
                 <span className="h-px w-8 bg-paper/20" aria-hidden />
                 {p.industry}
@@ -88,19 +88,19 @@ export default async function CaseStudyPage({ params }: PageProps<"/portfolio/[s
             </div>
             <dl data-reveal="up" className="grid grid-cols-2 gap-x-6 gap-y-5 text-sm lg:col-span-4">
               <div>
-                <dt className="eyebrow text-paper/40">Location</dt>
+                <dt className="eyebrow text-paper/60">Location</dt>
                 <dd className="mt-1.5 text-paper/85">{p.location}</dd>
               </div>
               <div>
-                <dt className="eyebrow text-paper/40">Year</dt>
+                <dt className="eyebrow text-paper/60">Year</dt>
                 <dd className="mt-1.5 text-paper/85">{p.year}</dd>
               </div>
               <div className="col-span-2">
-                <dt className="eyebrow text-paper/40">Services</dt>
+                <dt className="eyebrow text-paper/60">Services</dt>
                 <dd className="mt-1.5 text-paper/85">{serviceList.map((s) => s.name).join(" · ")}</dd>
               </div>
               <div className="col-span-2">
-                <dt className="eyebrow text-paper/40">Live site</dt>
+                <dt className="eyebrow text-paper/60">Live site</dt>
                 <dd className="mt-1.5">
                   <a href={p.url} target="_blank" rel="noopener noreferrer" className="group inline-flex items-center gap-1.5 text-green hover:text-green-bright">
                     {displayUrl(p.url)}
@@ -133,11 +133,11 @@ export default async function CaseStudyPage({ params }: PageProps<"/portfolio/[s
             </h2>
             <div className="mt-14 grid gap-10 border-t border-ink/10 pt-10 sm:grid-cols-2">
               <div data-reveal="up">
-                <h3 className="eyebrow text-ink/45">The challenge</h3>
+                <h3 className="eyebrow text-ink/65">The challenge</h3>
                 <p className="mt-4 text-[1.05rem] leading-relaxed text-ink/75">{p.challenge}</p>
               </div>
               <div data-reveal="up">
-                <h3 className="eyebrow text-ink/45">What we delivered</h3>
+                <h3 className="eyebrow text-ink/65">What we delivered</h3>
                 <ul className="mt-4 space-y-2.5">
                   {p.highlights.map((h) => (
                     <li key={h} className="flex gap-3 text-[1.02rem] leading-snug text-ink/80">
@@ -211,12 +211,12 @@ export default async function CaseStudyPage({ params }: PageProps<"/portfolio/[s
                 </div>
               </div>
               <div data-reveal="up" className="rounded-[10px] bg-ink-3 p-6 ring-1 ring-paper/10">
-                <p className="eyebrow text-paper/45">Visual language</p>
+                <p className="eyebrow text-paper/60">Visual language</p>
                 <div className="mt-5 flex gap-3">
                   {[p.palette.bg, p.palette.fg, p.palette.accent].map((c) => (
                     <span key={c} className="flex flex-1 flex-col gap-2">
                       <span className="h-16 rounded-[6px] ring-1 ring-paper/15" style={{ background: c }} />
-                      <span className="text-[0.7rem] uppercase tracking-[0.12em] text-paper/50">{c}</span>
+                      <span className="text-[0.7rem] uppercase tracking-[0.12em] text-paper/60">{c}</span>
                     </span>
                   ))}
                 </div>
@@ -242,7 +242,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/portfolio/[s
               <Avatar name={testimonial.name} photo={testimonial.photo} size={64} />
               <span>
                 <span className="block font-display text-lg font-semibold">{testimonial.name}</span>
-                <span className="block text-sm text-ink/55">
+                <span className="block text-sm text-ink/65">
                   {testimonial.role}, {testimonial.company}
                 </span>
               </span>
@@ -258,7 +258,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/portfolio/[s
       <section aria-label="Next steps" className="bg-ink text-paper">
         <div className="container-bs grid gap-12 py-24 sm:py-32 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-6">
-            <p className="eyebrow text-paper/50">Like what you see?</p>
+            <p className="eyebrow text-paper/60">Like what you see?</p>
             <p className="font-display-tight mt-5 text-[clamp(2.4rem,5vw,4.6rem)] font-semibold">
               Let’s build yours <span className="font-serif font-normal italic text-green">next.</span>
             </p>
@@ -276,7 +276,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/portfolio/[s
             className="group block border-t border-paper/10 pt-8 lg:col-span-5 lg:col-start-8"
             data-cursor="Next case"
           >
-            <span className="eyebrow text-paper/45">Next project</span>
+            <span className="eyebrow text-paper/60">Next project</span>
             <span className="mt-3 flex items-center justify-between gap-6">
               <span className="font-display-tight text-[clamp(2.2rem,4vw,3.6rem)] font-semibold transition-colors group-hover:text-green">
                 {next.name}
@@ -285,7 +285,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/portfolio/[s
                 <ArrowUpRight size={22} />
               </span>
             </span>
-            <span className="mt-2 block text-paper/50">{next.summary}</span>
+            <span className="mt-2 block text-paper/60">{next.summary}</span>
           </Link>
         </div>
       </section>

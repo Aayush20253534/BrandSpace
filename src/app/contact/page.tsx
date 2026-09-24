@@ -75,7 +75,7 @@ export default function ContactPage() {
 
               <div data-reveal="up" className="mt-10">
                 <WhatsAppButton size="lg">Talk to BrandSpace</WhatsAppButton>
-                <p className="mt-4 text-sm text-paper/45">The fastest way to reach us — opens WhatsApp chat.</p>
+                <p className="mt-4 text-sm text-paper/60">The fastest way to reach us — opens WhatsApp chat.</p>
               </div>
 
               <ul className="mt-14 divide-y divide-paper/10 border-y border-paper/10">
@@ -90,7 +90,7 @@ export default function ContactPage() {
                         <d.icon size={18} />
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="eyebrow block text-[0.64rem] text-paper/40">{d.label}</span>
+                        <span className="eyebrow block text-[0.64rem] text-paper/60">{d.label}</span>
                         <span className="mt-1 block break-words text-[0.98rem] text-paper/85 group-hover:text-green">{d.value}</span>
                       </span>
                       <ArrowUpRight size={18} className="shrink-0 text-paper/30 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-green" />

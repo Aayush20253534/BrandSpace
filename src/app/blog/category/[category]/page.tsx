@@ -47,7 +47,7 @@ export default async function CategoryPage({ params }: PageProps<"/blog/category
       </PageHero>
       <section aria-label={`${cat.name} articles`} className="bg-paper py-24 text-ink sm:py-32">
         <div className="container-bs">
-          <h2 className="eyebrow text-ink/50">
+          <h2 className="eyebrow text-ink/65">
             {posts.length} {posts.length === 1 ? "article" : "articles"}
           </h2>
           <div className="mt-12 grid gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">

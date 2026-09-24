@@ -15,13 +15,13 @@ export function pad2(n: number) {
   return n.toString().padStart(2, "0");
 }
 
+/** First + last initial ("Ayush Kumar Jha" → "AJ"), ignoring titles like "Dr." */
 export function initials(name: string) {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .map((p) => p[0]!.toUpperCase())
-    .slice(0, 2)
-    .join("");
+  const parts = name.split(/\s+/).filter((p) => p && !/^(dr|mr|mrs|ms)\.?$/i.test(p));
+  if (!parts.length) return "";
+  const first = parts[0]![0]!;
+  const last = parts.length > 1 ? parts[parts.length - 1]![0]! : "";
+  return (first + last).toUpperCase();
 }
 
 export function clamp(v: number, min = 0, max = 1) {

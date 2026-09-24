@@ -15,7 +15,7 @@ export function FinalCta({
       <div aria-hidden className="pointer-events-none absolute -right-[10vw] -top-[20vw] h-[60vw] w-[60vw] rounded-full border border-ink/10" />
       <div aria-hidden className="pointer-events-none absolute -right-[2vw] -top-[12vw] h-[44vw] w-[44vw] rounded-full border border-ink/10" />
       <div className="container-bs relative z-[2] py-24 sm:py-32 lg:py-40">
-        <p className="eyebrow flex items-center gap-3 text-ink/60" data-reveal="up">
+        <p className="eyebrow flex items-center gap-3 text-ink/80" data-reveal="up">
           <span className="h-[7px] w-[7px] rounded-full bg-ink" aria-hidden />
           Start your project
         </p>

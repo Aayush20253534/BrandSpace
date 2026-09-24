@@ -1,3 +1,5 @@
+import framesManifest from "./growthCityFrames.json";
+
 /**
  * "The BrandSpace Growth City" — the scroll-controlled cinematic hero.
  *
@@ -77,8 +79,8 @@ export const growthScenes: GrowthScene[] = [
 
 /**
  * Pre-rendered cinematic footage (Higgsfield) converted to frame sequences.
- * Set to `null` to use the code-rendered city. Generate with
- * `node scripts/growth-city-frames.mjs` — see README.
+ * `scripts/growth-city-frames.mjs` writes growthCityFrames.json; while it
+ * contains `null` the code-rendered city is used. See docs/growth-city.md.
  */
 export type FrameSet = {
   /** Path pattern, `{i}` is replaced by the zero-padded frame index. */
@@ -89,7 +91,7 @@ export type FrameSet = {
   height: number;
 };
 
-export const growthCityFrames: { desktop: FrameSet; mobile: FrameSet } | null = null;
+export const growthCityFrames = framesManifest as { desktop: FrameSet; mobile: FrameSet } | null;
 
 /**
  * Geometry linking the supplied logo artwork to the city layout, so the

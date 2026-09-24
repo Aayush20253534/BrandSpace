@@ -53,7 +53,7 @@ export function FoundingTeam() {
               </div>
               <div className="mt-5 flex items-center justify-between text-sm">
                 <span className="font-display font-semibold">{team[active]!.name}</span>
-                <span className="text-paper/45">{team[active]!.role}</span>
+                <span className="text-paper/60">{team[active]!.role}</span>
               </div>
             </div>
           </div>
@@ -73,24 +73,24 @@ export function FoundingTeam() {
                     aria-controls={`bio-${m.slug}`}
                     className="group flex w-full items-start gap-5 py-7 text-left sm:py-9"
                   >
-                    <span className={cn("mt-3 w-8 shrink-0 text-xs tabular-nums transition-colors", on ? "text-green" : "text-paper/35")}>{pad2(i + 1)}</span>
+                    <span className={cn("mt-3 w-8 shrink-0 text-xs tabular-nums transition-colors", on ? "text-green" : "text-paper/65")}>{pad2(i + 1)}</span>
                     <span className="flex-1">
                       <span
                         className={cn(
                           "block font-display-tight text-[clamp(2.4rem,5.4vw,5rem)] font-semibold transition-[color,transform] duration-700 ease-[var(--ease-out-expo)]",
-                          on ? "translate-x-2 text-paper" : "text-paper/30 group-hover:text-paper/60",
+                          on ? "translate-x-2 text-paper" : "text-paper/42 group-hover:text-paper/70",
                         )}
                       >
                         {m.name}
                       </span>
-                      <span className={cn("mt-3 block text-sm font-medium uppercase tracking-[0.16em] transition-colors", on ? "text-green" : "text-paper/40")}>
+                      <span className={cn("mt-3 block text-sm font-medium uppercase tracking-[0.16em] transition-colors", on ? "text-green" : "text-paper/60")}>
                         {m.role}
                       </span>
                     </span>
                     <span
                       className={cn(
                         "mt-3 grid h-11 w-11 shrink-0 place-items-center rounded-full border transition-all duration-500",
-                        on ? "rotate-45 border-green bg-green text-ink" : "border-paper/15 text-paper/50",
+                        on ? "rotate-45 border-green bg-green text-ink" : "border-paper/15 text-paper/60",
                       )}
                       aria-hidden
                     >

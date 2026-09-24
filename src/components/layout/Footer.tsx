@@ -24,14 +24,14 @@ export function Footer() {
             <p className="mt-6 max-w-sm font-serif text-[1.9rem] italic leading-[1.15] text-paper/85">
               Future of Business Growth.
             </p>
-            <p className="mt-5 max-w-sm text-sm leading-relaxed text-paper/50">
+            <p className="mt-5 max-w-sm text-sm leading-relaxed text-paper/60">
               A digital growth agency from Prayagraj, building websites, search visibility, social presence and brands that grow.
             </p>
           </div>
 
           <nav aria-label="Footer" className="grid grid-cols-2 gap-10 sm:grid-cols-3 lg:col-span-7">
             <div>
-              <h2 className="eyebrow text-paper/40">Navigation</h2>
+              <h2 className="eyebrow text-paper/60">Navigation</h2>
               <ul className="mt-5 space-y-3 text-[0.95rem]">
                 {navigation.map((n) => (
                   <li key={n.href}>
@@ -43,7 +43,7 @@ export function Footer() {
               </ul>
             </div>
             <div>
-              <h2 className="eyebrow text-paper/40">Services</h2>
+              <h2 className="eyebrow text-paper/60">Services</h2>
               <ul className="mt-5 space-y-3 text-[0.95rem]">
                 {services.map((s) => (
                   <li key={s.slug}>
@@ -55,7 +55,7 @@ export function Footer() {
               </ul>
             </div>
             <div className="col-span-2 sm:col-span-1">
-              <h2 className="eyebrow text-paper/40">Contact</h2>
+              <h2 className="eyebrow text-paper/60">Contact</h2>
               <address className="mt-5 space-y-3 text-[0.95rem] not-italic text-paper/75">
                 <a href={mailUrl} className="block break-all transition-colors hover:text-green">
                   {site.email}
@@ -63,7 +63,7 @@ export function Footer() {
                 <a href={telUrl} className="block transition-colors hover:text-green">
                   {site.phone.display}
                 </a>
-                <p className="leading-relaxed text-paper/55">
+                <p className="leading-relaxed text-paper/65">
                   {site.address.line1}
                   <br />
                   {site.address.locality}, {site.address.region}
@@ -100,7 +100,7 @@ export function Footer() {
               </a>
             </li>
           </ul>
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[0.78rem] text-paper/45">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[0.78rem] text-paper/60">
             {legalLinks.map((l) => (
               <Link key={l.href} href={l.href} className="transition-colors hover:text-paper">
                 {l.label}

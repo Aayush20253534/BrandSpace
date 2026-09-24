@@ -28,7 +28,7 @@ function CaseRow({ p, i }: { p: Project; i: number }) {
       </Link>
 
       <div className={cn("lg:col-span-5", flip ? "lg:order-1 lg:col-start-1 lg:row-start-1" : "lg:col-start-8")}>
-        <p data-reveal="up" className="eyebrow flex flex-wrap items-center gap-x-3 gap-y-1 text-paper/45">
+        <p data-reveal="up" className="eyebrow flex flex-wrap items-center gap-x-3 gap-y-1 text-paper/60">
           <span className="text-green">{pad2(i + 1)}</span>
           <span>{p.industry}</span>
           <span aria-hidden>·</span>
@@ -60,7 +60,7 @@ function CaseRow({ p, i }: { p: Project; i: number }) {
             href={p.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="group inline-flex items-center gap-1.5 text-[0.8rem] font-medium text-paper/55 transition-colors hover:text-paper"
+            className="group inline-flex items-center gap-1.5 text-[0.8rem] font-medium text-paper/65 transition-colors hover:text-paper"
           >
             Visit live site
             <ArrowUpRight size={15} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
@@ -94,7 +94,7 @@ export function PortfolioList() {
               )}
             >
               {s.shortName}
-              <span className={cn("ml-2 tabular-nums", on ? "text-ink/60" : "text-paper/35")}>{count}</span>
+              <span className={cn("ml-2 tabular-nums", on ? "text-ink/60" : "text-paper/65")}>{count}</span>
             </button>
           );
         })}

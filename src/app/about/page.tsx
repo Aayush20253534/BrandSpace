@@ -149,7 +149,7 @@ export default function AboutPage() {
           <div className="mt-24 border-t border-paper/10 pt-12 sm:mt-32">
             <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
               <div>
-                <p className="eyebrow text-paper/50">Our approach</p>
+                <p className="eyebrow text-paper/60">Our approach</p>
                 <p className="mt-4 max-w-xl font-display text-[clamp(1.5rem,2.4vw,2.2rem)] font-medium leading-snug tracking-[-0.02em]">
                   Six stages, one rhythm — from understanding your business to scaling what works.
                 </p>
@@ -160,7 +160,7 @@ export default function AboutPage() {
                 <li key={s.title} className="bg-ink-2 p-6">
                   <span className="text-xs tabular-nums text-green">{pad2(i + 1)}</span>
                   <p className="mt-6 font-display text-lg font-semibold uppercase tracking-[0.04em]">{s.title}</p>
-                  <p className="mt-2 text-sm leading-snug text-paper/50">{s.output}</p>
+                  <p className="mt-2 text-sm leading-snug text-paper/60">{s.output}</p>
                 </li>
               ))}
             </ol>
@@ -183,13 +183,13 @@ export default function AboutPage() {
           />
           <div className="mt-14 overflow-hidden rounded-[8px] border border-ink/10 sm:mt-20">
             <div className="grid grid-cols-2 bg-ink text-paper">
-              <p className="eyebrow p-5 text-paper/50 sm:p-6">Typical agency</p>
+              <p className="eyebrow p-5 text-paper/60 sm:p-6">Typical agency</p>
               <p className="eyebrow border-l border-paper/10 p-5 text-green sm:p-6">BrandSpace</p>
             </div>
             <ul>
               {difference.map(([them, us], i) => (
                 <li key={them} data-reveal="up" style={{ ["--rv-delay" as string]: `${i * 60}ms` }} className="grid grid-cols-2 border-t border-ink/10">
-                  <p className="p-5 text-[0.98rem] leading-snug text-ink/45 line-through decoration-ink/25 sm:p-6 sm:text-lg">{them}</p>
+                  <p className="p-5 text-[0.98rem] leading-snug text-ink/65 line-through decoration-ink/25 sm:p-6 sm:text-lg">{them}</p>
                   <p className="border-l border-ink/10 p-5 font-display text-[1rem] font-semibold leading-snug tracking-[-0.01em] sm:p-6 sm:text-xl">
                     {us}
                   </p>
@@ -209,7 +209,7 @@ export default function AboutPage() {
             <MapPin size={26} className="mt-1 shrink-0 text-green" />
             <span>
               <span className="block font-display text-2xl font-semibold tracking-[-0.02em]">{site.address.line1}</span>
-              <span className="block text-paper/55">
+              <span className="block text-paper/65">
                 {site.address.locality}, {site.address.region}, {site.address.country}
               </span>
             </span>

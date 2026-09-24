@@ -45,13 +45,13 @@ export function SelectedWork() {
               </div>
               <div className="mt-6 flex items-start justify-between gap-6">
                 <div>
-                  <p className="eyebrow text-paper/40">
+                  <p className="eyebrow text-paper/60">
                     {pad2(i + 1)} · {p.industry}
                   </p>
                   <h3 className="mt-2 font-display text-[clamp(1.7rem,2.6vw,2.6rem)] font-semibold tracking-[-0.03em]">
                     {p.name}
                   </h3>
-                  <p className="mt-1 text-paper/55">{p.summary}</p>
+                  <p className="mt-1 text-paper/65">{p.summary}</p>
                 </div>
                 <span className="mt-1 grid h-12 w-12 shrink-0 place-items-center rounded-full border border-paper/20 transition-all duration-500 group-hover:rotate-45 group-hover:border-green group-hover:bg-green group-hover:text-ink">
                   <ArrowUpRight size={20} />
@@ -73,7 +73,7 @@ export function SelectedWork() {
           <p className="font-serif text-[clamp(2rem,3vw,3rem)] italic leading-tight text-paper/90">
             Six launches. Five industries. One approach.
           </p>
-          <p className="mt-5 max-w-xs text-paper/55">Explore every case study — including our healthcare work.</p>
+          <p className="mt-5 max-w-xs text-paper/65">Explore every case study — including our healthcare work.</p>
           <div className="mt-8">
             <ButtonLink href="/portfolio">Explore the portfolio</ButtonLink>
           </div>

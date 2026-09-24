@@ -37,7 +37,7 @@ export function BrowserFrame({
         <span
           className={cn(
             "mx-auto flex h-5 max-w-[60%] flex-1 items-center justify-center truncate rounded-full px-3 text-[0.65rem] tracking-wide sm:h-6 sm:text-[0.7rem]",
-            tone === "dark" ? "bg-ink-4 text-paper/55" : "bg-white text-ink/50",
+            tone === "dark" ? "bg-ink-4 text-paper/65" : "bg-white text-ink/65",
           )}
         >
           {displayUrl(project.url)}
@@ -71,30 +71,43 @@ export function BrowserFrame({
  * (drop a 1600×900 image into /public/portfolio/<slug>/hero.webp and set
  * `preview` in src/data/portfolio.ts).
  */
+/** Black or white, whichever reads better on `hex`. */
+function readableOn(hex: string) {
+  const n = parseInt(hex.slice(1), 16);
+  const lin = (c: number) => {
+    const v = c / 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  };
+  const L = 0.2126 * lin((n >> 16) & 255) + 0.7152 * lin((n >> 8) & 255) + 0.0722 * lin(n & 255);
+  return L > 0.18 ? "#111" : "#fff";
+}
+
 function PreviewPlaceholder({ project }: { project: Project }) {
   const { bg, fg, accent } = project.palette;
+  const onAccent = readableOn(accent);
   return (
     <div className="absolute inset-0 flex flex-col" style={{ background: bg, color: fg }} role="img" aria-label={`${project.name} website preview`}>
-      <div className="flex items-center justify-between px-[5%] py-[3%] text-[clamp(0.45rem,0.9vw,0.75rem)] font-medium uppercase tracking-[0.18em] opacity-70">
+      <div className="flex items-center justify-between px-[5%] py-[3%] text-[clamp(0.45rem,0.9vw,0.75rem)] font-medium uppercase tracking-[0.18em]">
         <span>{project.name}</span>
         <span className="hidden gap-[1.5em] sm:flex" aria-hidden>
           <span>Treatments</span>
           <span>About</span>
           <span>Contact</span>
         </span>
-        <span className="rounded-full px-[1.2em] py-[0.6em] text-white" style={{ background: accent }}>
+        <span className="rounded-full px-[1.2em] py-[0.6em]" style={{ background: accent, color: onAccent }}>
           Book
         </span>
       </div>
       <div className="grid flex-1 grid-cols-12 items-center gap-[4%] px-[5%]">
         <div className="col-span-7">
-          <p className="text-[clamp(0.45rem,0.8vw,0.7rem)] font-semibold uppercase tracking-[0.2em]" style={{ color: accent }}>
+          <p className="flex items-center gap-[0.6em] text-[clamp(0.45rem,0.8vw,0.7rem)] font-semibold uppercase tracking-[0.2em]">
+            <span className="inline-block h-[0.6em] w-[0.6em] rounded-full" style={{ background: accent }} aria-hidden />
             {project.industry}
           </p>
           <p className="font-display-tight mt-[0.4em] text-[clamp(1.2rem,3.4vw,3rem)] font-semibold">{project.summary}</p>
           <span
-            className="mt-[1.2em] inline-block rounded-full px-[1.4em] py-[0.7em] text-[clamp(0.45rem,0.8vw,0.7rem)] font-semibold uppercase tracking-[0.14em] text-white"
-            style={{ background: accent }}
+            className="mt-[1.2em] inline-block rounded-full px-[1.4em] py-[0.7em] text-[clamp(0.45rem,0.8vw,0.7rem)] font-semibold uppercase tracking-[0.14em]"
+            style={{ background: accent, color: onAccent }}
           >
             Book an appointment
           </span>

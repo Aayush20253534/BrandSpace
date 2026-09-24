@@ -63,10 +63,10 @@ export function PostCard({
             {post.title}
           </Link>
         </h3>
-        <p className={cn("mt-3 leading-relaxed", size === "lg" ? "text-lg" : "text-[0.98rem]", light ? "text-ink/65" : "text-paper/55")}>
+        <p className={cn("mt-3 leading-relaxed", size === "lg" ? "text-lg" : "text-[0.98rem]", light ? "text-ink/65" : "text-paper/65")}>
           {post.excerpt}
         </p>
-        <PostMeta post={post} minutes={minutes} className={cn("mt-5", light ? "text-ink/45" : "text-paper/40")} />
+        <PostMeta post={post} minutes={minutes} className={cn("mt-5", light ? "text-ink/65" : "text-paper/60")} />
       </div>
     </article>
   );

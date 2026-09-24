@@ -25,7 +25,7 @@ export function ShareLinks({ url, title, className }: { url: string; title: stri
 
   return (
     <div className={className}>
-      <p className="eyebrow text-ink/45">Share</p>
+      <p className="eyebrow text-ink/65">Share</p>
       <ul className="mt-4 flex flex-wrap gap-2">
         {links.map((l) => (
           <li key={l.label}>

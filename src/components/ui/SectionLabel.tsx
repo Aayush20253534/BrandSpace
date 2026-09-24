@@ -17,12 +17,12 @@ export function SectionLabel({
       data-reveal="up"
       className={cn(
         "eyebrow flex items-center gap-3",
-        tone === "light" ? "text-paper/60" : "text-ink/55",
+        tone === "light" ? "text-paper/60" : "text-ink/65",
         className,
       )}
     >
       <span className="inline-block h-[7px] w-[7px] rounded-full bg-green" aria-hidden />
-      {index && <span className={tone === "light" ? "text-paper/35" : "text-ink/35"}>({index})</span>}
+      {index && <span className={tone === "light" ? "text-paper/50" : "text-ink/60"}>({index})</span>}
       <span>{children}</span>
     </p>
   );

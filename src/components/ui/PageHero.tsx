@@ -19,7 +19,7 @@ export function Breadcrumbs({
 }) {
   return (
     <nav aria-label="Breadcrumb" className={className}>
-      <ol className={cn("flex flex-wrap items-center gap-2 text-[0.72rem] font-medium uppercase tracking-[0.18em]", tone === "light" ? "text-paper/45" : "text-ink/45")}>
+      <ol className={cn("flex flex-wrap items-center gap-2 text-[0.72rem] font-medium uppercase tracking-[0.18em]", tone === "light" ? "text-paper/60" : "text-ink/65")}>
         {items.map((c, i) => {
           const last = lastIsCurrent && i === items.length - 1;
           return (

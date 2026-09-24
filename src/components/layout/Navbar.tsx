@@ -93,7 +93,7 @@ export function Navbar() {
             : "border-b border-transparent bg-transparent",
         )}
       >
-        <div className="container-bs flex h-[var(--header-h)] items-center justify-between gap-6">
+        <div className="container-bs flex h-[var(--header-h)] items-center justify-between gap-3 sm:gap-6">
           <Logo className="relative z-10" />
 
           <nav aria-label="Primary" className="hidden lg:block">
@@ -121,7 +121,7 @@ export function Navbar() {
             </ul>
           </nav>
 
-          <div className="relative z-10 flex items-center gap-2 sm:gap-3">
+          <div className="relative z-10 flex shrink-0 items-center gap-2 sm:gap-3">
             <Magnetic strength={0.2}>
               <a
                 href={whatsappUrl()}
@@ -198,7 +198,7 @@ export function Navbar() {
                     )}
                     style={{ transitionDelay: open ? `${120 + i * 60}ms` : "0ms" }}
                   >
-                    <span className="font-sans text-xs font-medium tracking-[0.2em] text-paper/35">0{i + 1}</span>
+                    <span className="font-sans text-xs font-medium tracking-[0.2em] text-paper/65">0{i + 1}</span>
                     {item.label}
                   </Link>
                 </li>

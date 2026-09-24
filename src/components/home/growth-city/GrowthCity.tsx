@@ -40,6 +40,7 @@ export function GrowthCity() {
   const revealRef = useRef<HTMLDivElement>(null);
   const wordmarkRef = useRef<HTMLSpanElement>(null);
   const counterRef = useRef<HTMLSpanElement>(null);
+  const dimRef = useRef<HTMLDivElement>(null);
   const lenis = useLenis();
   const [reduced, setReduced] = useState(false);
   const [loading, setLoading] = useState<number | null>(null);
@@ -109,7 +110,7 @@ export function GrowthCity() {
 
     const draw = (p: number, now: number) => {
       if (player) player.render(p);
-      else city!.render(reduce ? 0.9 : p, now);
+      else city!.render(reduce ? 0.97 : p, now);
       updateOverlays(reduce ? 1 : p);
     };
 
@@ -166,6 +167,10 @@ export function GrowthCity() {
         logo.style.visibility = inA < 0.01 ? "hidden" : "visible";
       }
 
+      // Footage mode: darken the last frames so the logo and wordmark read clearly
+      // (the code-rendered city handles its own finale dimming).
+      if (player && dimRef.current) dimRef.current.style.opacity = String(0.72 * ramp(p, 0.88, 0.96));
+
       // Wordmark, tagline & CTA
       const reveal = revealRef.current;
       if (reveal) {
@@ -203,8 +208,13 @@ export function GrowthCity() {
       raf = requestAnimationFrame(loop);
     };
     const stop = () => {
+      if (!running) return;
       running = false;
       cancelAnimationFrame(raf);
+      // Leaving the viewport mid-transition (e.g. a fast fling): settle on the final state.
+      computeTarget();
+      current = target;
+      draw(current, performance.now());
     };
 
     computeTarget();
@@ -257,6 +267,8 @@ export function GrowthCity() {
             visible ? "opacity-100" : "opacity-0",
           )}
         />
+
+        <div ref={dimRef} aria-hidden className="pointer-events-none absolute inset-0 bg-ink opacity-0" />
 
         {/* Legibility gradients */}
         <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-ink/70 to-transparent" />
@@ -321,7 +333,7 @@ export function GrowthCity() {
         {/* Mobile counter */}
         {!reduced && (
           <div className="absolute left-[var(--gutter)] top-[calc(var(--header-h)+0.75rem)] lg:hidden" aria-hidden>
-            <p className="eyebrow text-[0.62rem] text-paper/50">
+            <p className="eyebrow text-[0.62rem] text-paper/60">
               <span ref={counterRef} className="text-paper">01</span> / 08 · Growth City
             </p>
           </div>
@@ -341,7 +353,7 @@ export function GrowthCity() {
             aria-hidden
             className="pointer-events-none absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-3 md:flex"
           >
-            <span className="eyebrow text-[0.62rem] text-paper/55">Scroll to explore</span>
+            <span className="eyebrow text-[0.62rem] text-paper/65">Scroll to explore</span>
             <span className="relative h-10 w-px overflow-hidden bg-paper/15">
               <span className="absolute inset-x-0 top-0 h-1/2 animate-[scrollcue_2.2s_ease-in-out_infinite] bg-green" />
             </span>
@@ -384,8 +396,7 @@ export function GrowthCity() {
             alt="BrandSpace logo"
             width={logoGeometry.size}
             height={logoGeometry.size}
-            loading="eager"
-            sizes="421px"
+            fetchPriority="low"
             className="logo-on-dark h-full w-full"
           />
         </div>

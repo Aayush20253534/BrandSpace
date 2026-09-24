@@ -20,11 +20,11 @@ function Detail({ s, compact, showVisual = true }: { s: Service; compact?: boole
       </div>
       <div className="grid gap-7 sm:grid-cols-2 sm:gap-10">
         <div>
-          <h4 className="eyebrow text-ink/45">What we do</h4>
+          <h4 className="eyebrow text-ink/65">What we do</h4>
           <p className="mt-3 text-[1.02rem] leading-relaxed text-ink/80">{s.what}</p>
         </div>
         <div>
-          <h4 className="eyebrow text-ink/45">How we do it</h4>
+          <h4 className="eyebrow text-ink/65">How we do it</h4>
           <ul className="mt-3 space-y-2.5">
             {s.how.map((h) => (
               <li key={h} className="flex gap-3 text-[0.95rem] leading-snug text-ink/80">
@@ -37,7 +37,7 @@ function Detail({ s, compact, showVisual = true }: { s: Service; compact?: boole
       </div>
       <div className="flex flex-col gap-6 border-t border-ink/10 pt-6 sm:flex-row sm:items-end sm:justify-between">
         <div className="max-w-md">
-          <h4 className="eyebrow text-ink/45">Business outcome</h4>
+          <h4 className="eyebrow text-ink/65">Business outcome</h4>
           <p className="mt-2 font-serif text-[1.55rem] italic leading-snug text-ink">{s.outcome}</p>
         </div>
         <WhatsAppButton variant="dark" message={serviceMessage(s)} label={`Talk to BrandSpace about ${s.name} on WhatsApp`}>
@@ -107,24 +107,24 @@ export function Services() {
                     onMouseEnter={() => window.matchMedia("(min-width: 1024px)").matches && setActive(i)}
                     className="group flex w-full items-center gap-5 py-6 text-left sm:py-7"
                   >
-                    <span className={cn("w-8 text-xs font-medium tabular-nums transition-colors", isActive ? "text-green-deep" : "text-ink/35")}>
+                    <span className={cn("w-8 text-xs font-medium tabular-nums transition-colors", isActive ? "text-green-deep" : "text-ink/60")}>
                       {pad2(i + 1)}
                     </span>
                     <span className="flex-1">
                       <span
                         className={cn(
                           "block font-display text-[clamp(1.45rem,2.6vw,2.15rem)] font-semibold leading-[1.05] tracking-[-0.03em] transition-[color,transform] duration-500 ease-[var(--ease-out-expo)]",
-                          isActive ? "translate-x-1 text-ink" : "text-ink/40 group-hover:text-ink/70",
+                          isActive ? "translate-x-1 text-ink" : "text-ink/60 group-hover:text-ink/75 lg:text-ink/50",
                         )}
                       >
                         {s.name}
                       </span>
-                      <span className={cn("mt-1.5 block text-sm transition-colors", isActive ? "text-ink/60" : "text-ink/35")}>{s.kicker}</span>
+                      <span className={cn("mt-1.5 block text-sm transition-colors", isActive ? "text-ink/60" : "text-ink/60")}>{s.kicker}</span>
                     </span>
                     <span
                       className={cn(
                         "grid h-10 w-10 shrink-0 place-items-center rounded-full border transition-all duration-500",
-                        isActive ? "rotate-45 border-ink bg-ink text-green" : "border-ink/15 text-ink/50 group-hover:border-ink/40",
+                        isActive ? "rotate-45 border-ink bg-ink text-green" : "border-ink/15 text-ink/65 group-hover:border-ink/40",
                       )}
                       aria-hidden
                     >

@@ -85,7 +85,7 @@ export function WhyBrandSpace() {
                     key={p.title}
                     className={cn(
                       "font-display-tight text-[clamp(2.4rem,4.4vw,4.4rem)] font-semibold transition-[color,transform] duration-700 ease-[var(--ease-out-expo)]",
-                      i === active ? "translate-x-3 text-green" : i < active ? "text-paper/45" : "text-paper/15",
+                      i === active ? "translate-x-3 text-green" : i < active ? "text-paper/60" : "text-paper/25",
                     )}
                   >
                     {p.title}
@@ -109,7 +109,7 @@ export function WhyBrandSpace() {
                 data-index={i}
                 className="flex min-h-0 flex-col justify-center border-t border-paper/10 py-12 lg:min-h-[62vh] lg:border-t-0 lg:py-0"
               >
-                <p data-reveal="up" className="eyebrow flex items-center gap-3 text-paper/45">
+                <p data-reveal="up" className="eyebrow flex items-center gap-3 text-paper/60">
                   <span className="text-green">{pad2(i + 1)}</span>
                   <span className="h-px w-8 bg-paper/20" aria-hidden />
                   Principle

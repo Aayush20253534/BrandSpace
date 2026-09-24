@@ -103,11 +103,11 @@ export default async function ArticlePage({ params }: PageProps<"/blog/[slug]">)
                     <Avatar name={author.name} photo={author.photo} size={44} tone="light" />
                     <span>
                       <span className="block text-[0.95rem] font-medium text-paper">{author.name}</span>
-                      <span className="block text-[0.78rem] text-paper/45">{author.role}</span>
+                      <span className="block text-[0.78rem] text-paper/60">{author.role}</span>
                     </span>
                   </Link>
                 )}
-                <PostMeta post={post} minutes={minutes} className="text-paper/50" />
+                <PostMeta post={post} minutes={minutes} className="text-paper/60" />
               </div>
             </div>
           </div>
@@ -136,9 +136,9 @@ export default async function ArticlePage({ params }: PageProps<"/blog/[slug]">)
                   <div className="mt-14 flex gap-5 rounded-[10px] bg-paper-2 p-6 sm:p-8">
                     <Avatar name={author.name} photo={author.photo} size={64} />
                     <div>
-                      <p className="eyebrow text-ink/45">Written by</p>
+                      <p className="eyebrow text-ink/65">Written by</p>
                       <p className="mt-1 font-display text-xl font-semibold tracking-[-0.02em]">{author.name}</p>
-                      <p className="text-sm text-ink/55">{author.role}</p>
+                      <p className="text-sm text-ink/65">{author.role}</p>
                       <p className="mt-3 text-[0.95rem] leading-relaxed text-ink/70">{author.bio}</p>
                     </div>
                   </div>

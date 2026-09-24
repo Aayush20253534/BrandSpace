@@ -20,7 +20,7 @@ export function MetricsRow({
       <dl className={cn("grid grid-cols-3", compact ? "gap-4" : "gap-6 sm:gap-10")}>
         {items.map((m) => (
           <div key={m.label} className={cn("flex flex-col border-t pt-4", tone === "light" ? "border-paper/15" : "border-ink/15")}>
-            <dt className={cn("order-2 mt-2 text-[0.7rem] font-semibold uppercase leading-tight tracking-[0.14em]", tone === "light" ? "text-paper/50" : "text-ink/55")}>
+            <dt className={cn("order-2 mt-2 text-[0.7rem] font-semibold uppercase leading-tight tracking-[0.14em]", tone === "light" ? "text-paper/60" : "text-ink/65")}>
               {m.label}
             </dt>
             <dd className="order-1">
@@ -37,7 +37,7 @@ export function MetricsRow({
               />
             </dd>
             {!compact && (
-              <dd className={cn("order-3 mt-2 text-sm leading-snug", tone === "light" ? "text-paper/50" : "text-ink/55")}>{m.context}</dd>
+              <dd className={cn("order-3 mt-2 text-sm leading-snug", tone === "light" ? "text-paper/60" : "text-ink/65")}>{m.context}</dd>
             )}
           </div>
         ))}

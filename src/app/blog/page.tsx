@@ -50,7 +50,7 @@ export default function BlogPage() {
 
       <section aria-label="Featured article" className="bg-ink pb-20 text-paper sm:pb-28">
         <div className="container-bs">
-          <h2 className="eyebrow mb-8 text-paper/45">Featured</h2>
+          <h2 className="eyebrow mb-8 text-paper/60">Featured</h2>
           <PostCard post={featured} minutes={readingTime(featured.slug)} size="lg" eager />
         </div>
       </section>

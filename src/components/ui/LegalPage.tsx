@@ -18,7 +18,7 @@ export function LegalPage({
         <div className="container-bs">
           <Breadcrumbs items={crumbs} />
           <h1 className="font-display-tight mt-10 text-[clamp(2.8rem,7vw,6rem)] font-semibold">{title}</h1>
-          <p className="mt-6 text-sm text-paper/50">Last updated: {updated}</p>
+          <p className="mt-6 text-sm text-paper/60">Last updated: {updated}</p>
         </div>
       </section>
       <section className="bg-paper py-16 text-ink sm:py-24">

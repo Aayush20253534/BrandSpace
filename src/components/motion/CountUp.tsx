@@ -51,7 +51,8 @@ export function CountUp({
   }, [value, duration]);
 
   return (
-    <span ref={ref} className={className} aria-label={`${prefix}${value.toFixed(decimals)}${suffix}`}>
+    <span ref={ref} className={className}>
+      <span className="sr-only">{`${prefix}${value.toFixed(decimals)}${suffix}`}</span>
       <span aria-hidden>
         {prefix}
         {display.toFixed(decimals)}

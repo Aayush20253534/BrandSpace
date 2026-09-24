@@ -67,7 +67,7 @@ export function Results() {
                   </span>
                   <span>
                     <span className="block font-display text-xl font-semibold tracking-[-0.02em]">{project.name}</span>
-                    <span className="block text-sm text-ink/50">{project.industry}</span>
+                    <span className="block text-sm text-ink/65">{project.industry}</span>
                   </span>
                 </div>
                 <div className="col-span-7 sm:col-span-4">
@@ -82,7 +82,7 @@ export function Results() {
                 <div className="col-span-5 flex items-center justify-between gap-4 sm:col-span-4">
                   <span>
                     <span className="block text-sm font-semibold uppercase tracking-[0.12em] text-green-deep">{metric.label}</span>
-                    <span className="mt-1 block text-sm leading-snug text-ink/55">{metric.context}</span>
+                    <span className="mt-1 block text-sm leading-snug text-ink/65">{metric.context}</span>
                   </span>
                   <ArrowUpRight size={22} className="hidden shrink-0 text-ink/30 transition-all group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-ink sm:block" />
                 </div>

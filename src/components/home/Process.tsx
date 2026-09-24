@@ -71,7 +71,7 @@ export function Process() {
                 {pad2(active + 1)}
               </span>
               <span className="pb-2">
-                <span className="block text-sm text-paper/40">/ {pad2(processSteps.length)}</span>
+                <span className="block text-sm text-paper/60">/ {pad2(processSteps.length)}</span>
                 <span key={active} className="block animate-[panelIn_0.6s_var(--ease-out-expo)_both] font-display text-2xl font-semibold uppercase tracking-[0.08em]">
                   {processSteps[active]!.title}
                 </span>
@@ -98,7 +98,7 @@ export function Process() {
                 <span
                   className={cn(
                     "absolute left-0 top-1 grid h-[31px] w-[31px] place-items-center rounded-full border text-[0.62rem] font-semibold tabular-nums transition-all duration-500",
-                    reached ? "border-green bg-green text-ink" : "border-paper/20 bg-ink text-paper/50",
+                    reached ? "border-green bg-green text-ink" : "border-paper/20 bg-ink text-paper/60",
                   )}
                   aria-hidden
                 >
@@ -107,15 +107,15 @@ export function Process() {
                 <h3
                   className={cn(
                     "font-display-tight text-[clamp(2.2rem,4.2vw,3.6rem)] font-semibold uppercase transition-colors duration-500",
-                    reached ? "text-paper" : "text-paper/25",
+                    reached ? "text-paper" : "text-paper/40",
                   )}
                 >
                   {s.title}
                 </h3>
-                <p className={cn("mt-4 max-w-md text-[1.05rem] leading-relaxed transition-colors duration-500", reached ? "text-paper/65" : "text-paper/30")}>
+                <p className={cn("mt-4 max-w-md text-[1.05rem] leading-relaxed transition-colors duration-500", reached ? "text-paper/65" : "text-paper/55")}>
                   {s.body}
                 </p>
-                <p className={cn("eyebrow mt-5 transition-colors duration-500", reached ? "text-green" : "text-paper/25")}>
+                <p className={cn("eyebrow mt-5 transition-colors duration-500", reached ? "text-green" : "text-paper/55")}>
                   → {s.output}
                 </p>
               </li>

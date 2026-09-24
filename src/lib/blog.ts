@@ -61,7 +61,7 @@ export function renderPost(post: BlogPost) {
 
   let html = marked.parse(readRaw(post.slug), { async: false }) as string;
   // Wide tables scroll horizontally on small screens instead of overflowing.
-  html = html.replace(/<table>/g, '<div class="table-wrap"><table>').replace(/<\/table>/g, "</table></div>");
+  html = html.replace(/<table>/g, '<div class="table-wrap" tabindex="0" role="region" aria-label="Table (scrolls horizontally)"><table>').replace(/<\/table>/g, "</table></div>");
 
   return { html, toc: toc.filter((t) => t.depth === 2), words: wordCount(post.slug) };
 }

@@ -23,7 +23,7 @@ export function PlaceholderNote({
     <p
       className={cn(
         "text-[0.68rem] leading-relaxed tracking-[0.02em]",
-        tone === "light" ? "text-paper/40" : "text-ink/45",
+        tone === "light" ? "text-paper/60" : "text-ink/65",
         className,
       )}
     >

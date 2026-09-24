@@ -33,7 +33,7 @@ export function Testimonials() {
             />
           </div>
           <div className="flex items-center gap-3" data-reveal="up">
-            <span className="mr-3 text-sm tabular-nums text-ink/50" aria-live="polite">
+            <span className="mr-3 text-sm tabular-nums text-ink/65" aria-live="polite">
               {pad2(index + 1)} / {pad2(count)}
             </span>
             <button
@@ -61,7 +61,7 @@ export function Testimonials() {
               <Avatar name={t.name} photo={t.photo} size={72} className="animate-[panelIn_0.7s_var(--ease-out-expo)_both]" />
               <figcaption className="animate-[panelIn_0.7s_var(--ease-out-expo)_0.1s_both]">
                 <span className="block font-display text-lg font-semibold tracking-[-0.02em]">{t.name}</span>
-                <span className="block text-sm text-ink/55">
+                <span className="block text-sm text-ink/65">
                   {t.role}, {t.company}
                 </span>
                 {t.project && (
