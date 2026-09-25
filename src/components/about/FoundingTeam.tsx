@@ -53,7 +53,7 @@ export function FoundingTeam() {
               </div>
               <div className="mt-5 flex items-center justify-between text-sm">
                 <span className="font-display font-semibold">{team[active]!.name}</span>
-                <span className="text-paper/60">{team[active]!.role}</span>
+                <span className="text-paper/60">{team[active]!.status === "verified" ? team[active]!.role : "Co-Founder"}</span>
               </div>
             </div>
           </div>
@@ -87,7 +87,7 @@ export function FoundingTeam() {
                         </span>
                       </span>
                       <span className={cn("mt-3 block text-sm font-medium uppercase tracking-[0.16em] transition-colors", on ? "text-green" : "text-paper/60")}>
-                        {m.role}
+                        {m.status === "verified" ? m.role : "Co-Founder"}
                       </span>
                     </span>
                     <span
@@ -108,14 +108,18 @@ export function FoundingTeam() {
                       <div className="grid gap-6 pb-10 pl-[3.25rem] sm:grid-cols-[minmax(0,12rem)_1fr] sm:gap-8 lg:block">
                         <Portrait member={m} className="w-40 rounded-[4px] sm:w-full lg:hidden" sizes="(min-width: 640px) 12rem, 10rem" />
                         <div>
-                          <p className="max-w-xl text-[1.05rem] leading-relaxed text-paper/70">{m.bio}</p>
-                          <ul className="mt-5 flex flex-wrap gap-2" aria-label="Focus areas">
-                            {m.focus.map((f) => (
-                              <li key={f} className="rounded-full border border-paper/12 px-3 py-1 text-[0.75rem] text-paper/65">
-                                {f}
-                              </li>
-                            ))}
-                          </ul>
+                          <p className="max-w-xl text-[1.05rem] leading-relaxed text-paper/70">
+                            {m.status === "verified" ? m.bio : "Co-founder at BrandSpace."}
+                          </p>
+                          {m.status === "verified" && (
+                            <ul className="mt-5 flex flex-wrap gap-2" aria-label="Focus areas">
+                              {m.focus.map((f) => (
+                                <li key={f} className="rounded-full border border-paper/12 px-3 py-1 text-[0.75rem] text-paper/65">
+                                  {f}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -126,7 +130,7 @@ export function FoundingTeam() {
           </ol>
         </div>
         <PlaceholderNote status={team.map((m) => m.status)} className="mt-10">
-          Founder portraits, roles and bios are placeholders — final photography and biographies to follow.
+          Founder photography and detailed profiles will be added after final approval.
         </PlaceholderNote>
       </div>
     </section>

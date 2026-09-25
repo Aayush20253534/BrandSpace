@@ -55,3 +55,6 @@ jobs:
         env:
           NEXT_PUBLIC_SITE_URL: https://brandspaces.in
         run: npm run build
+
+      - name: Release source gate
+        run: npm run release:source

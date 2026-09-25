@@ -15,7 +15,10 @@
     "perf:check": "node scripts/performance-check.mjs",
     "security:check": "node scripts/security-check.mjs",
     "check": "npm run lint && npm run typecheck && npm run perf:check && npm run security:check && npm run build",
-    "audit:security": "npm audit --audit-level=high"
+    "audit:security": "npm audit --audit-level=high",
+    "release:source": "node scripts/release-verify.mjs",
+    "release:verify": "npm run check && npm run audit:security && npm run release:source",
+    "release:check:live": "node scripts/release-live-check.mjs"
   },
   "dependencies": {
     "gsap": "^3.15.0",
