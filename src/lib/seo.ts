@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { site } from "@/data/site";
-import { services } from "@/data/services";
+import { services, type Service } from "@/data/services";
 import { team } from "@/data/team";
 
 export const absoluteUrl = (path = "/") => new URL(path, site.url).toString();
@@ -65,7 +65,7 @@ export function pageMetadata({
 export const organizationId = `${site.url}/#organization`;
 export const websiteId = `${site.url}/#website`;
 const personId = (slug: string) => `${site.url}/#person-${slug}`;
-const serviceId = (slug: string) => `${site.url}/#service-${slug}`;
+export const serviceId = (slug: string) => `${site.url}/#service-${slug}`;
 
 const areaServed = [
   { "@type": "City", name: "Prayagraj" },
@@ -101,6 +101,7 @@ export function organizationSchema() {
     name: service.name,
     serviceType: service.shortName,
     description: service.what,
+    url: absoluteUrl(`/services/${service.slug}`),
     provider: { "@id": organizationId },
     areaServed,
   }));
@@ -186,6 +187,37 @@ export function contactPageSchema() {
     about: { "@id": organizationId },
     mainEntity: { "@id": organizationId },
     inLanguage: "en-IN",
+  };
+}
+
+export function servicePageSchema(service: Service) {
+  const pageUrl = absoluteUrl(`/services/${service.slug}`);
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${pageUrl}#webpage`,
+        url: pageUrl,
+        name: service.seoTitle,
+        description: service.seoDescription,
+        isPartOf: { "@id": websiteId },
+        about: { "@id": serviceId(service.slug) },
+        mainEntity: { "@id": serviceId(service.slug) },
+        inLanguage: "en-IN",
+      },
+      {
+        "@type": "Service",
+        "@id": serviceId(service.slug),
+        name: service.name,
+        serviceType: service.shortName,
+        description: service.what,
+        url: pageUrl,
+        provider: { "@id": organizationId },
+        areaServed,
+      },
+    ],
   };
 }
 

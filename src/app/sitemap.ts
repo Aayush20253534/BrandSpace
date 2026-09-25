@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/data/site";
 import { projects } from "@/data/portfolio";
+import { services } from "@/data/services";
 import { blogCategories, blogPosts } from "@/data/blog";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -33,6 +34,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     { url: url("/"), changeFrequency: "monthly", priority: 1 },
+    { url: url("/services"), changeFrequency: "monthly", priority: 0.9 },
+    ...services.map((service) => ({
+      url: url(`/services/${service.slug}`),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })),
     { url: url("/portfolio"), changeFrequency: "monthly", priority: 0.9 },
     ...projects.map((p) => ({
       url: url(`/portfolio/${p.slug}`),
