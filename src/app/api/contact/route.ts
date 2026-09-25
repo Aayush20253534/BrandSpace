@@ -220,14 +220,37 @@ async function verifyTurnstile(token: string | undefined, ip: string): Promise<T
     success?: boolean;
     hostname?: string;
     action?: string;
+    "error-codes"?: string[];
   };
 
-  if (data.success !== true) return { ok: false };
+  if (data.success !== true) {
+    console.warn("[contact] Turnstile rejected token.", {
+      errorCodes: data["error-codes"] ?? [],
+      hostname: data.hostname ?? null,
+      action: data.action ?? null,
+    });
+    return { ok: false };
+  }
 
   if (process.env.NODE_ENV === "production") {
     const hostname = data.hostname?.toLowerCase();
-    if (!hostname || !allowedTurnstileHostnames().has(hostname)) return { ok: false };
-    if (data.action !== "contact") return { ok: false };
+    if (!hostname || !allowedTurnstileHostnames().has(hostname)) {
+      console.warn("[contact] Turnstile hostname mismatch.", {
+        hostname: hostname ?? null,
+        action: data.action ?? null,
+      });
+      return { ok: false };
+    }
+
+    // Cloudflare has already validated the token and hostname. `action` is
+    // contextual metadata, so do not reject a legitimate enquiry solely
+    // because a widget/browser returns it empty or differently.
+    if (data.action !== "contact") {
+      console.warn("[contact] Unexpected Turnstile action on a valid token.", {
+        hostname,
+        action: data.action ?? null,
+      });
+    }
   }
 
   return { ok: true };

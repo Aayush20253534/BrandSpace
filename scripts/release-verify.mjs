@@ -130,7 +130,15 @@ for (const marker of [
   check(nextConfig.includes(marker), `security header configured: ${marker}`);
 }
 
-for (const marker of ["BODY_LIMIT_BYTES", "originAllowed", "verifyTurnstile", 'data.action !== "contact"', "rateLimited"]) {
+for (const marker of [
+  "BODY_LIMIT_BYTES",
+  "originAllowed",
+  "verifyTurnstile",
+  "data.success !== true",
+  "allowedTurnstileHostnames",
+  "Unexpected Turnstile action on a valid token",
+  "rateLimited",
+]) {
   check(contactRoute.includes(marker), `contact API control present: ${marker}`);
 }
 
