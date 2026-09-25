@@ -3,11 +3,26 @@
  * Edit here — every component reads from this file.
  */
 
+const PRODUCTION_SITE_URL = "https://brandspaces.in";
+
+function normalizeSiteUrl(value: string) {
+  const url = new URL(value);
+  if (process.env.NODE_ENV === "production" && url.protocol !== "https:") {
+    throw new Error(`Production site URL must use HTTPS: ${value}`);
+  }
+  return url.origin;
+}
+
 function resolveSiteUrl() {
-  const explicit = process.env.NEXT_PUBLIC_SITE_URL;
-  if (explicit) return explicit.replace(/\/$/, "");
-  const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL;
-  if (vercel) return `https://${vercel}`;
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (explicit) return normalizeSiteUrl(explicit);
+
+  // Never let canonical/OG/schema URLs silently become a vercel.app hostname
+  // in production just because an environment variable was forgotten.
+  if (process.env.NODE_ENV === "production") return PRODUCTION_SITE_URL;
+
+  const vercel = process.env.VERCEL_URL;
+  if (vercel) return normalizeSiteUrl(`https://${vercel}`);
   return "http://localhost:3000";
 }
 

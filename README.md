@@ -9,7 +9,7 @@ Built with **Next.js 16 (App Router, Turbopack) · TypeScript · Tailwind CSS v4
 
 | Route | What it is |
 | --- | --- |
-| `/` | Growth City cinematic hero → Services → Selected Work → Why BrandSpace → Results → Process → Client Feedback → CTA |
+| `/` | Growth City cinematic hero → Services → Selected Work → Editorial break → Why BrandSpace → Results → Process → Insights → Client Feedback → CTA |
 | `/portfolio`, `/portfolio/[slug]` | Case-study portfolio (6 projects) with full case study pages |
 | `/about` | Story, vision, mission, philosophy, approach, difference, **Meet the Founding Team** |
 | `/blog`, `/blog/[slug]`, `/blog/category/[category]` | Markdown blog with categories, TOC, related articles, sharing |
@@ -41,7 +41,8 @@ Presentation components never hard-code business content. Edit these files:
 | `src/data/team.ts` | Founders: roles, bios, portraits |
 | `src/data/approach.ts` | Why-BrandSpace pillars and the 6-step process |
 | `src/data/blog.ts` + `src/content/blog/*.md` | Blog index/metadata + article bodies (Markdown) |
-| `src/data/growthCity.ts` | Growth City scene copy and timing |
+| `src/lib/images.ts` | Editorial photography (blog covers, homepage editorial break) and photo credits |
+| `src/data/growthCity.ts` | Growth City scene copy, scene ranges and the footage pacing timeline |
 
 ### ⚠️ Placeholder content to replace before launch
 
@@ -53,9 +54,6 @@ shows a discreet "illustrative" note beside it until you switch the record to `"
 - **Founder roles, bios and portraits**: `src/data/team.ts`. Add 4:5 photos to `/public/team/`
   and set `photo`. Until then, editorial monogram portraits are rendered.
 - **Case-study narratives** (challenge/approach) and the **services delivered** per project
-- **Lotus Family Dental** and **Eclectic Dental Care** previews: their sites were unreachable from
-  the build environment, so a designed placeholder frame is shown. Add a 1600×900 screenshot at
-  `/public/portfolio/<slug>/hero.webp` and set `preview` in `portfolio.ts`.
 - **Blog articles** are launch drafts attributed to founders; review before publishing.
 - **Social profiles**: add URLs in `site.socials`; empty entries are hidden.
 
@@ -103,10 +101,22 @@ city, and the exact Higgsfield prompts, credit budget and import script for cine
 | Script | Does |
 | --- | --- |
 | `node scripts/process-logo.mjs` | Cuts the supplied logo (`assets/source/brandspace-logo.jpg`) to a transparent PNG/WebP + app icons |
-| `node scripts/process-portfolio.mjs` | Optimises portfolio screenshots from `assets/source/` |
-| `node scripts/generate-covers.mjs` | Renders blog cover art (1600×900 WebP) |
+| `node scripts/process-portfolio.mjs [slug …]` | Optimises portfolio screenshots from `assets/source/` into 1600×900 WebP (optional per-project crop) |
 | `node scripts/generate-og.mjs` | Renders the default social share image (needs Chromium) |
 | `node scripts/growth-city-frames.mjs` | Converts Higgsfield clips into Growth City frame sequences (needs ffmpeg) |
+
+## Editorial photography
+
+Blog covers and the homepage editorial break use real, topic-matched photography from
+[Unsplash](https://unsplash.com/license) (free to use under the Unsplash License), defined in
+`src/lib/images.ts` with alt text, art-directed framing (`position`) and a photographer credit
+(shown under each article's hero image). Photos render through `<Photo>`
+(`src/components/ui/Photo.tsx`), which asks Unsplash's CDN for exactly the width each `srcset` entry
+needs; `next.config.ts` also allows those URLs in `images.remotePatterns`. A light BrandSpace grade
+(tint, soft floor shadow, corner grid) is applied in CSS by `<Cover>` and eases off on hover.
+
+To change a cover, pick a free (non-Unsplash+) photo, copy its `photo-…` id and update the
+`unsplash(id, alt, credit, position)` call in `src/data/blog.ts`.
 
 ## Accessibility & motion
 
@@ -114,3 +124,15 @@ Semantic landmarks, skip link, one `h1` per page, labelled controls, focus-visib
 keyboard-operable menu (focus trap, Escape), WCAG AA text contrast (verified with axe-core), and
 `prefers-reduced-motion` support throughout: smooth scrolling, reveals and the cinematic hero all
 fall back to static presentations.
+
+### Motion building blocks
+
+| Piece | Use |
+| --- | --- |
+| `data-reveal="up / fade / words / clip / line"` | CSS reveals toggled by `<InViewObserver>` (no JS per element) |
+| `data-center` | Gets `data-active` while crossing the middle of the viewport (e.g. Results rows) |
+| `data-fx="parallax / zoom / drift / progress"` | Scroll-linked GSAP ScrollTrigger effects from `<ScrollFx>`; `data-fx-media` (`md` or `lg`) limits them by breakpoint |
+| `HorizontalScroll` | Selected Work; panels opt into `data-hs-panel`, `data-hs-scale`, `data-hs-ghost` |
+
+Everything is skipped for `prefers-reduced-motion`, and all ScrollTriggers are killed when their
+elements leave the page.

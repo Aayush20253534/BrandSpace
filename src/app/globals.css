@@ -465,7 +465,12 @@ html.js .gc-fade { opacity: 0; visibility: hidden; }
 html:not(.js) .gc-scroll { height: 100svh; }
 html:not(.js) .gc-overlay,
 html:not(.js) .gc-logo,
-html:not(.js) .gc-loader { display: none; }
+html:not(.js) .gc-loader,
+html:not(.js) .gc-chrome { display: none !important; }
+/* The sliding nav pill needs JS; keep a static marker on the current page. */
+html:not(.js) nav[aria-label="Primary"] a[aria-current="page"] {
+  background: color-mix(in oklab, var(--color-paper) 9%, transparent);
+}
 html:not(.js) .gc-reveal { top: 50%; translate: 0 -50%; }
 html:not(.js) .gc-static-logo { display: block !important; }
 

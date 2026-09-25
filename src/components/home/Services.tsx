@@ -85,9 +85,12 @@ export function Services() {
     layers.forEach((l) => {
       if (l !== out && l !== inn) gsap.set(l, { autoAlpha: 0, zIndex: 0 });
     });
-    if (reduce) {
+    // Phones use the accordion (the stage isn't rendered): just leave the right layer showing.
+    if (reduce || stage.offsetParent === null) {
       if (out) gsap.set(out, { autoAlpha: 0, zIndex: 0 });
       gsap.set(inn, { autoAlpha: 1, zIndex: 2, scale: 1, clipPath: "none" });
+      // An interrupted stagger may have left pieces half-faded.
+      gsap.set([...text, ...items], { clearProps: "opacity,transform" });
       return;
     }
 

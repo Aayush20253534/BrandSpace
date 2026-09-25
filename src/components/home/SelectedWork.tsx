@@ -15,9 +15,9 @@ export function SelectedWork() {
   const featured = projects.filter((p) => p.featured);
 
   return (
-    <section aria-labelledby="work-title" className="relative bg-ink py-24 text-paper sm:py-32 lg:py-0">
+    <section aria-labelledby="work-title" className="relative bg-ink py-24 text-paper sm:py-32 lg:motion-safe:py-0">
       <HorizontalScroll
-        trackClassName="gap-20 px-[var(--gutter)] lg:items-center lg:gap-[6vw]"
+        trackClassName="gap-20 px-[var(--gutter)] lg:motion-safe:items-center lg:motion-safe:gap-[6vw]"
         backdrop={
           <>
             {/* Ambient light tinted toward the project on screen (colour set by HorizontalScroll) */}
@@ -39,7 +39,7 @@ export function SelectedWork() {
         }
       >
         {/* Intro panel */}
-        <div className="flex shrink-0 flex-col justify-center lg:w-[34vw] lg:max-w-[34rem]">
+        <div className="flex shrink-0 flex-col justify-center lg:max-w-[34rem] lg:motion-safe:w-[34vw]">
           <SectionLabel index="02">Selected Work</SectionLabel>
           <RevealText
             id="work-title"
@@ -63,7 +63,7 @@ export function SelectedWork() {
             key={p.slug}
             data-hs-panel
             data-hs-accent={p.palette.mood ?? p.palette.accent}
-            className="relative shrink-0 lg:w-[58vw] lg:max-w-[64rem]"
+            className="relative shrink-0 lg:motion-safe:w-[58vw] lg:motion-safe:max-w-[64rem]"
           >
             <Link href={`/portfolio/${p.slug}`} className="group relative block" data-cursor="View case" aria-label={`${p.name} — view case study`}>
               <div data-reveal="clip" className="overflow-hidden rounded-[10px]">
@@ -101,7 +101,7 @@ export function SelectedWork() {
         ))}
 
         {/* Outro panel */}
-        <div className="flex shrink-0 flex-col justify-center border-t border-paper/10 pt-12 lg:w-[26vw] lg:border-l lg:border-t-0 lg:pl-[4vw] lg:pt-0">
+        <div className="flex shrink-0 flex-col justify-center border-t border-paper/10 pt-12 lg:motion-safe:w-[26vw] lg:motion-safe:border-l lg:motion-safe:border-t-0 lg:motion-safe:pl-[4vw] lg:motion-safe:pt-0">
           <p className="font-serif text-[clamp(2rem,3vw,3rem)] italic leading-tight text-paper/90">
             Six launches. Five industries. One approach.
           </p>

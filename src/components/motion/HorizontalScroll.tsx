@@ -170,17 +170,18 @@ export function HorizontalScroll({
 
   return (
     <div ref={sectionRef} className={cn("relative", className)}>
-      <div className="lg:sticky lg:top-0 lg:flex lg:h-screen lg:items-center lg:overflow-hidden">
+      {/* Horizontal only on large screens without reduced motion (matches `mq` above) */}
+      <div className="lg:motion-safe:sticky lg:motion-safe:top-0 lg:motion-safe:flex lg:motion-safe:h-screen lg:motion-safe:items-center lg:motion-safe:overflow-hidden">
         {backdrop && (
           <div
             ref={backdropRef}
             aria-hidden
-            className="pointer-events-none absolute inset-0 hidden opacity-0 transition-[color,opacity] duration-[1400ms] ease-out lg:block"
+            className="pointer-events-none absolute inset-0 hidden opacity-0 transition-[color,opacity] duration-[1400ms] ease-out lg:motion-safe:block"
           >
             {backdrop}
           </div>
         )}
-        <div ref={trackRef} className={cn("relative flex flex-col lg:flex-row lg:will-change-transform", trackClassName)}>
+        <div ref={trackRef} className={cn("relative flex flex-col lg:motion-safe:flex-row lg:motion-safe:will-change-transform", trackClassName)}>
           {children}
         </div>
       </div>

@@ -32,6 +32,8 @@ const instrument = Instrument_Serif({
   display: "swap",
 });
 
+const isPreviewDeployment = process.env.VERCEL_ENV === "preview";
+
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
@@ -60,11 +62,24 @@ export const metadata: Metadata = {
     description: site.description,
     images: ["/og/brandspace-og.jpg"],
   },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
-  },
+  robots: isPreviewDeployment
+    ? {
+        index: false,
+        follow: false,
+        noarchive: true,
+        googleBot: { index: false, follow: false, noarchive: true },
+      }
+    : {
+        index: true,
+        follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          "max-image-preview": "large",
+          "max-snippet": -1,
+          "max-video-preview": -1,
+        },
+      },
   category: "business",
 };
 
@@ -84,7 +99,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     >
       <head>
         {/* Marks JS as available so reveal animations can start hidden without hiding content for no-JS visitors. */}
-        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
+        <script>{"document.documentElement.classList.add('js')"}</script>
         <JsonLd data={organizationSchema()} />
       </head>
       <body>

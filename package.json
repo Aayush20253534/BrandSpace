@@ -7,11 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "assets:logo": "node scripts/process-logo.mjs",
     "assets:portfolio": "node scripts/process-portfolio.mjs",
     "assets:og": "node scripts/generate-og.mjs",
-    "growth-city:frames": "node scripts/growth-city-frames.mjs"
+    "growth-city:frames": "node scripts/growth-city-frames.mjs",
+    "check": "npm run lint && npm run typecheck && npm run build",
+    "audit:security": "npm audit --audit-level=high"
   },
   "dependencies": {
     "gsap": "^3.15.0",

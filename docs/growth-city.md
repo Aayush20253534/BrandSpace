@@ -19,11 +19,22 @@ LONELY BUSINESS → BRANDING → WEBSITE → SEO → SOCIAL → ADS + CUSTOMERS 
 | Footage → frames converter | `scripts/growth-city-frames.mjs` |
 
 - The section is pinned with CSS `position: sticky`; scroll position maps to progress `p` (0 → 1).
-- `p` is followed with a critically-damped filter, so trackpads, wheels, flings and touch all feel
-  smooth — and scrolling backwards reverses everything exactly.
+- `p` is followed with a critically-damped filter with a top speed (0.45 progress per second), so
+  aggressive trackpad flicks, wheel bursts and touch flings play out at a steady, cinematic pace —
+  and scrolling backwards reverses everything exactly. *Skip intro* lifts the speed limit.
+- The section is 620svh on phones and 880svh from `md` up. Scene slices (`growthScenes[].range`)
+  give Identity, Presence, Discovery, Growth City and the final reveal the most room.
+- `storyTimeline` in `src/data/growthCity.ts` maps progress to footage frames: each scene plays its
+  transformation over roughly the first 60% of its slice, then holds (drifting a few frames) while
+  its copy is read — scroll → transformation → brief hold → next transformation.
+- Scene copy is choreographed with GSAP when a scene takes over: the label line draws, the headline
+  rises word by word through its mask (from above when scrolling back), the detail follows and the
+  previous scene leaves first. The finale is staged: the real logo glides in with scroll, then the
+  wordmark, tagline and CTAs play in on their own clock (and rewind if you scroll back).
 - The final logo is always the **real supplied artwork** (`/public/brand/brandspace-logo.png`),
   animated in code. It is never generated.
-- Reduced-motion users get a static aerial hero with the logo and CTA — no 700vh scroll.
+- Reduced-motion users (and visitors without JavaScript) get a static hero with the logo and CTA —
+  no long scroll.
 - Low-power devices (≤4 cores, ≤4 GB memory, Save-Data, or small screens) render at lower
   resolution and density.
 
@@ -40,7 +51,9 @@ LONELY BUSINESS → BRANDING → WEBSITE → SEO → SOCIAL → ADS + CUSTOMERS 
    cross-faded for sub-frame smoothness. A minimal loader shows until the first keyframes arrive.
    Desktop uses 16:9 frames; portrait devices use a centre-cropped 9:16 set so the central business
    stays in frame. The manifest's `timeline` maps scroll progress to frames piecewise-linearly, so
-   each clip can take its own share of the scroll and its story beats land under the matching copy.
+   each clip can take its own share of the scroll; the hand-tuned `storyTimeline` in
+   `src/data/growthCity.ts` refines that with holds so each beat lands under its copy. Re-tune it if
+   the footage is ever re-imported.
 
 ## Generating the footage with Higgsfield (≤ 50 credits)
 

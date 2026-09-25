@@ -426,7 +426,7 @@ export function GrowthCity() {
 
         {/* Scene rail (desktop) */}
         {!reduced && (
-          <div ref={railRef} className="absolute right-[var(--gutter)] top-1/2 hidden -translate-y-1/2 lg:block" aria-hidden>
+          <div ref={railRef} className="gc-chrome absolute right-[var(--gutter)] top-1/2 hidden -translate-y-1/2 lg:block" aria-hidden>
             <div className="relative flex gap-5">
               <ol className="flex flex-col gap-[1.15rem] text-right">
                 {growthScenes.map((s, i) => (
@@ -452,7 +452,7 @@ export function GrowthCity() {
 
         {/* Mobile counter */}
         {!reduced && (
-          <div className="absolute left-[var(--gutter)] top-[calc(var(--header-h)+0.75rem)] lg:hidden" aria-hidden>
+          <div className="gc-chrome absolute left-[var(--gutter)] top-[calc(var(--header-h)+0.75rem)] lg:hidden" aria-hidden>
             <p className="eyebrow text-[0.62rem] text-paper/60">
               <span ref={counterRef} className="text-paper">01</span> / 08 · Growth City
             </p>
@@ -461,7 +461,7 @@ export function GrowthCity() {
 
         {/* Progress */}
         {!reduced && (
-          <div className="absolute inset-x-0 bottom-0 h-px bg-paper/10" aria-hidden>
+          <div className="gc-chrome absolute inset-x-0 bottom-0 h-px bg-paper/10" aria-hidden>
             <div ref={barRef} className="h-full origin-left bg-green" style={{ transform: "scaleX(0)" }} />
           </div>
         )}
@@ -471,7 +471,7 @@ export function GrowthCity() {
           <div
             ref={hintRef}
             aria-hidden
-            className="pointer-events-none absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-3 md:flex"
+            className="gc-chrome pointer-events-none absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-3 md:flex"
           >
             <span className="eyebrow text-[0.62rem] text-paper/65">Scroll to explore</span>
             <span className="relative h-10 w-px overflow-hidden bg-paper/15">
@@ -486,7 +486,7 @@ export function GrowthCity() {
             ref={skipRef}
             type="button"
             onClick={skip}
-            className="group absolute bottom-5 right-[var(--gutter)] inline-flex items-center gap-2 rounded-full border border-paper/15 bg-ink/40 px-4 py-2.5 text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-paper/70 backdrop-blur-md transition-colors hover:border-paper/40 hover:text-paper md:bottom-6"
+            className="gc-chrome group absolute bottom-5 right-[var(--gutter)] inline-flex items-center gap-2 rounded-full border border-paper/15 bg-ink/40 px-4 py-2.5 text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-paper/70 backdrop-blur-md transition-colors hover:border-paper/40 hover:text-paper md:bottom-6"
           >
             Skip intro
             <ArrowDown size={14} className="transition-transform group-hover:translate-y-0.5" />

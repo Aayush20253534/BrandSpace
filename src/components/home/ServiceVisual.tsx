@@ -85,9 +85,10 @@ const card = "rounded-[1.2cqw] shadow-[0_3cqw_6cqw_-2cqw_rgba(0,0,0,0.75)] ring-
 function Web({ eager }: { eager?: boolean }) {
   return (
     <>
-      <div data-sv-item className={cn("absolute left-[34%] top-[6%] w-[58%] overflow-hidden bg-ink-3 opacity-60", card)}>
+      <div data-sv-item className={cn("absolute left-[34%] top-[6%] w-[58%] overflow-hidden bg-ink-3", card)}>
         <Chrome url="zobhungr.com" />
-        <Crop src={shot.zob} sizes="(min-width: 1024px) 24vw, 50vw" className="aspect-[16/9]" pos="50% 0%" />
+        {/* Only the screenshot recedes, so the chrome label keeps its contrast */}
+        <Crop src={shot.zob} sizes="(min-width: 1024px) 24vw, 50vw" className="aspect-[16/9] opacity-50" pos="50% 0%" />
       </div>
       <div data-sv-item className={cn("absolute left-[5%] top-[15%] w-[64%] overflow-hidden bg-ink-3", card)}>
         <Chrome url="casa-mauve-three.vercel.app" />
