@@ -45,6 +45,9 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Performance budgets
+        run: npm run perf:check
+
       - name: Production build
         env:
           NEXT_PUBLIC_SITE_URL: https://brandspaces.in

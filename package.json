@@ -12,7 +12,8 @@
     "assets:portfolio": "node scripts/process-portfolio.mjs",
     "assets:og": "node scripts/generate-og.mjs",
     "growth-city:frames": "node scripts/growth-city-frames.mjs",
-    "check": "npm run lint && npm run typecheck && npm run build",
+    "perf:check": "node scripts/performance-check.mjs",
+    "check": "npm run lint && npm run typecheck && npm run perf:check && npm run build",
     "audit:security": "npm audit --audit-level=high"
   },
   "dependencies": {
