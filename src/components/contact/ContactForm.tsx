@@ -25,6 +25,11 @@ type Values = {
 const initial: Values = { name: "", company: "", email: "", phone: "", service: "", budget: "", details: "", consent: false };
 const turnstileKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
+function resetTurnstile() {
+  const api = (window as typeof window & { turnstile?: { reset: () => void } }).turnstile;
+  api?.reset();
+}
+
 function validate(values: Values) {
   const res = contactSchema.safeParse(values);
   if (res.success) return {};
@@ -109,11 +114,13 @@ export function ContactForm() {
         setStatus("success");
         return;
       }
+      resetTurnstile();
       setServerErrors((data.fieldErrors as Partial<Record<keyof Values, string>>) ?? {});
       setStatus("error");
       setMessage(data.error ?? "Something went wrong. Please try again.");
       requestAnimationFrame(() => summaryRef.current?.focus());
     } catch {
+      resetTurnstile();
       setStatus("error");
       setMessage("We couldn’t reach the server. Check your connection and try again, or message us on WhatsApp.");
       requestAnimationFrame(() => summaryRef.current?.focus());
@@ -324,7 +331,7 @@ export function ContactForm() {
           {err("consent")}
         </div>
 
-        {turnstileKey && <div className="cf-turnstile sm:col-span-2" data-sitekey={turnstileKey} data-theme="light" />}
+        {turnstileKey && <div className="cf-turnstile sm:col-span-2" data-sitekey={turnstileKey} data-action="contact" data-theme="light" />}
       </div>
 
       <div className="mt-10 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">

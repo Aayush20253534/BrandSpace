@@ -42,7 +42,7 @@ export const spamSchema = z.object({
   /** Timestamp when the form was rendered. */
   startedAt: z.number().int().positive(),
   /** Cloudflare Turnstile token, when enabled. */
-  turnstileToken: z.string().optional(),
+  turnstileToken: z.string().max(2048).optional(),
 });
 
 export const MIN_FILL_MS = 3000;

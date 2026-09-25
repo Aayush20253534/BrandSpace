@@ -48,6 +48,9 @@ jobs:
       - name: Performance budgets
         run: npm run perf:check
 
+      - name: Source security checks
+        run: npm run security:check
+
       - name: Production build
         env:
           NEXT_PUBLIC_SITE_URL: https://brandspaces.in

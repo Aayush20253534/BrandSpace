@@ -9,6 +9,21 @@ const CONTENT_DIR = path.join(process.cwd(), "src/content/blog");
 
 export type TocItem = { id: string; text: string; depth: number };
 
+const escapeHtml = (value: string) =>
+  value.replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]!);
+
+const escapeAttribute = (value: string) => escapeHtml(value).replace(/`/g, "&#96;");
+
+const safeHref = (href: string) => {
+  const value = href.trim();
+  if (/^https?:\/\//i.test(value)) return value;
+  if (/^(?:mailto:|tel:)/i.test(value)) return value;
+  if (/^#/.test(value)) return value;
+  if (/^\/(?!\/)/.test(value)) return value;
+  if (/^\.\.?\//.test(value)) return value;
+  return null;
+};
+
 const slugify = (s: string) =>
   s
     .toLowerCase()
@@ -49,12 +64,26 @@ export function renderPost(post: BlogPost) {
         if (token.depth <= 3) toc.push({ id, text: token.text.replace(/\*\*/g, ""), depth: token.depth });
         return `<h${token.depth} id="${id}">${html}</h${token.depth}>\n`;
       },
+      html(token) {
+        // Articles are authored in Markdown. Raw HTML is displayed as text,
+        // never passed through as executable markup.
+        return escapeHtml(token.text);
+      },
       link(this: { parser: { parseInline: (t: Tokens.Generic[]) => string } }, token: Tokens.Link) {
         const text = this.parser.parseInline(token.tokens);
-        const external = /^https?:\/\//.test(token.href);
+        const href = safeHref(token.href);
+        if (!href) return text;
+
+        const external = /^https?:\/\//i.test(href);
         const attrs = external ? ' target="_blank" rel="noopener noreferrer"' : "";
-        const title = token.title ? ` title="${token.title}"` : "";
-        return `<a href="${token.href}"${title}${attrs}>${text}</a>`;
+        const title = token.title ? ` title="${escapeAttribute(token.title)}"` : "";
+        return `<a href="${escapeAttribute(href)}"${title}${attrs}>${text}</a>`;
+      },
+      image(token) {
+        const href = safeHref(token.href);
+        if (!href || /^(?:mailto:|tel:|#)/i.test(href)) return escapeHtml(token.text);
+        const title = token.title ? ` title="${escapeAttribute(token.title)}"` : "";
+        return `<img src="${escapeAttribute(href)}" alt="${escapeAttribute(token.text)}"${title}>`;
       },
     },
   });
