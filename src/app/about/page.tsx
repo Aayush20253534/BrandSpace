@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { site } from "@/data/site";
 import { processSteps } from "@/data/approach";
-import { team } from "@/data/team";
-import { breadcrumbSchema, pageMetadata, absoluteUrl } from "@/lib/seo";
+import { aboutPageSchema, breadcrumbSchema, pageMetadata } from "@/lib/seo";
 import { pad2 } from "@/lib/utils";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { PageHero } from "@/components/ui/PageHero";
@@ -45,19 +44,7 @@ export default function AboutPage() {
   return (
     <>
       <JsonLd data={breadcrumbSchema(crumbs)} />
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "AboutPage",
-          url: absoluteUrl("/about"),
-          name: "About BrandSpace",
-          mainEntity: {
-            "@type": "Organization",
-            "@id": `${site.url}/#organization`,
-            founder: team.map((m) => ({ "@type": "Person", name: m.name, jobTitle: m.role })),
-          },
-        }}
-      />
+      <JsonLd data={aboutPageSchema()} />
 
       <PageHero
         crumbs={crumbs}

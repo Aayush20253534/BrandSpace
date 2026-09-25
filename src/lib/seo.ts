@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { site } from "@/data/site";
 import { services } from "@/data/services";
+import { team } from "@/data/team";
 
 export const absoluteUrl = (path = "/") => new URL(path, site.url).toString();
 
@@ -61,35 +62,70 @@ export function pageMetadata({
 /* Structured data                                                     */
 /* ------------------------------------------------------------------ */
 
-const orgId = `${site.url}/#organization`;
+export const organizationId = `${site.url}/#organization`;
+export const websiteId = `${site.url}/#website`;
+const personId = (slug: string) => `${site.url}/#person-${slug}`;
+const serviceId = (slug: string) => `${site.url}/#service-${slug}`;
+
+const areaServed = [
+  { "@type": "City", name: "Prayagraj" },
+  { "@type": "Country", name: "India" },
+];
 
 export function organizationSchema() {
-  const sameAs = site.socials.map((s) => s.href).filter(Boolean);
+  const sameAs = site.socials.map((social) => social.href).filter(Boolean);
+  const founders = team.map((member) => ({ "@id": personId(member.slug) }));
+
+  const people = team.map((member) => {
+    const memberSameAs = member.links?.map((link) => link.href).filter(Boolean) ?? [];
+
+    return {
+      "@type": "Person",
+      "@id": personId(member.slug),
+      name: member.name,
+      affiliation: { "@id": organizationId },
+      ...(member.status === "verified"
+        ? {
+            jobTitle: member.role,
+            description: member.bio,
+            ...(member.photo ? { image: absoluteUrl(member.photo.src) } : {}),
+            ...(memberSameAs.length ? { sameAs: memberSameAs } : {}),
+          }
+        : {}),
+    };
+  });
+
+  const serviceNodes = services.map((service) => ({
+    "@type": "Service",
+    "@id": serviceId(service.slug),
+    name: service.name,
+    serviceType: service.shortName,
+    description: service.what,
+    provider: { "@id": organizationId },
+    areaServed,
+  }));
+
   return {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "Organization",
-        "@id": orgId,
-        name: site.name,
-        slogan: site.tagline,
-        url: site.url,
-        logo: absoluteUrl("/brand/brandspace-logo.png"),
-        email: site.email,
-        telephone: site.phone.e164,
-        ...(sameAs.length ? { sameAs } : {}),
-      },
-      {
         "@type": "ProfessionalService",
-        "@id": `${site.url}/#localbusiness`,
+        "@id": organizationId,
         name: site.name,
         description: site.description,
+        slogan: site.tagline,
         url: site.url,
         image: absoluteUrl("/og/brandspace-og.jpg"),
         logo: absoluteUrl("/brand/brandspace-logo.png"),
         email: site.email,
         telephone: site.phone.e164,
-        parentOrganization: { "@id": orgId },
+        contactPoint: {
+          "@type": "ContactPoint",
+          telephone: site.phone.e164,
+          email: site.email,
+          contactType: "sales",
+          areaServed: "IN",
+        },
         address: {
           "@type": "PostalAddress",
           streetAddress: site.address.line1,
@@ -98,26 +134,58 @@ export function organizationSchema() {
           postalCode: site.address.postalCode,
           addressCountry: site.address.countryCode,
         },
-        geo: { "@type": "GeoCoordinates", latitude: site.address.geo.lat, longitude: site.address.geo.lng },
-        areaServed: [{ "@type": "City", name: "Prayagraj" }, { "@type": "Country", name: "India" }],
+        areaServed,
+        founder: founders,
+        ...(sameAs.length ? { sameAs } : {}),
         hasOfferCatalog: {
           "@type": "OfferCatalog",
-          name: "Digital growth services",
-          itemListElement: services.map((s) => ({
+          name: "BrandSpace digital growth services",
+          itemListElement: services.map((service) => ({
             "@type": "Offer",
-            itemOffered: { "@type": "Service", name: s.name, description: s.what },
+            itemOffered: { "@id": serviceId(service.slug) },
           })),
         },
       },
+      ...serviceNodes,
+      ...people,
       {
         "@type": "WebSite",
-        "@id": `${site.url}/#website`,
+        "@id": websiteId,
         url: site.url,
         name: site.name,
-        publisher: { "@id": orgId },
+        publisher: { "@id": organizationId },
         inLanguage: "en-IN",
       },
     ],
+  };
+}
+
+export function aboutPageSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    "@id": `${absoluteUrl("/about")}#webpage`,
+    url: absoluteUrl("/about"),
+    name: "About BrandSpace",
+    isPartOf: { "@id": websiteId },
+    about: { "@id": organizationId },
+    mainEntity: { "@id": organizationId },
+    mentions: team.map((member) => ({ "@id": personId(member.slug) })),
+    inLanguage: "en-IN",
+  };
+}
+
+export function contactPageSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "@id": `${absoluteUrl("/contact")}#webpage`,
+    url: absoluteUrl("/contact"),
+    name: "Contact BrandSpace",
+    isPartOf: { "@id": websiteId },
+    about: { "@id": organizationId },
+    mainEntity: { "@id": organizationId },
+    inLanguage: "en-IN",
   };
 }
 
@@ -158,7 +226,7 @@ export function articleSchema(input: {
     datePublished: input.publishedAt,
     dateModified: input.updatedAt ?? input.publishedAt,
     author: { "@type": "Person", name: input.authorName, url: absoluteUrl(input.authorPath) },
-    publisher: { "@id": orgId },
+    publisher: { "@id": organizationId },
     articleSection: input.section,
     keywords: input.keywords.join(", "),
     wordCount: input.wordCount,
@@ -183,7 +251,7 @@ export function caseStudySchema(input: {
     url: absoluteUrl(input.path),
     ...(input.image ? { image: absoluteUrl(input.image) } : {}),
     dateCreated: String(input.year),
-    creator: { "@id": orgId },
+    creator: { "@id": organizationId },
     about: { "@type": "Organization", name: input.name, url: input.clientUrl },
     keywords: input.services.join(", "),
   };

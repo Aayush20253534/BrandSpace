@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { projects } from "@/data/portfolio";
-import { breadcrumbSchema, pageMetadata } from "@/lib/seo";
+import { absoluteUrl, breadcrumbSchema, pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { PageHero } from "@/components/ui/PageHero";
 import { PortfolioList } from "@/components/portfolio/PortfolioList";
@@ -31,7 +31,7 @@ export default function PortfolioPage() {
           itemListElement: projects.map((p, i) => ({
             "@type": "ListItem",
             position: i + 1,
-            url: `/portfolio/${p.slug}`,
+            url: absoluteUrl(`/portfolio/${p.slug}`),
             name: p.name,
           })),
         }}

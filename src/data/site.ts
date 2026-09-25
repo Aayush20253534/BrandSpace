@@ -52,8 +52,6 @@ export const site = {
     postalCode: "211004",
     country: "India",
     countryCode: "IN",
-    /** Approximate campus coordinates, used for LocalBusiness schema. */
-    geo: { lat: 25.4920, lng: 81.8639 },
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=MNNIT+Allahabad+Prayagraj",
   },
 

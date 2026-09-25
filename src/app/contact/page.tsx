@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { site } from "@/data/site";
-import { breadcrumbSchema, pageMetadata, absoluteUrl } from "@/lib/seo";
+import { breadcrumbSchema, contactPageSchema, pageMetadata } from "@/lib/seo";
 import { mailUrl, telUrl, whatsappUrl } from "@/lib/whatsapp";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Breadcrumbs } from "@/components/ui/PageHero";
@@ -39,24 +39,7 @@ export default function ContactPage() {
   return (
     <>
       <JsonLd data={breadcrumbSchema(crumbs)} />
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "ContactPage",
-          url: absoluteUrl("/contact"),
-          name: "Contact BrandSpace",
-          mainEntity: {
-            "@id": `${site.url}/#localbusiness`,
-            contactPoint: {
-              "@type": "ContactPoint",
-              telephone: site.phone.e164,
-              email: site.email,
-              contactType: "sales",
-              areaServed: "IN",
-            },
-          },
-        }}
-      />
+      <JsonLd data={contactPageSchema()} />
 
       <section className="grain relative overflow-hidden bg-ink pb-20 pt-[calc(var(--header-h)+3.5rem)] text-paper sm:pt-[calc(var(--header-h)+5rem)] lg:pb-32">
         <div aria-hidden className="hairline-grid pointer-events-none absolute inset-0 opacity-50 [mask-image:linear-gradient(to_bottom,black,transparent_80%)]" />
