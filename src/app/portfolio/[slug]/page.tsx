@@ -157,16 +157,18 @@ export default async function CaseStudyPage({ params }: PageProps<"/portfolio/[s
         </div>
       </section>
 
-      {/* Results */}
-      <section aria-labelledby="impact-title" className="bg-ink py-24 text-paper sm:py-32">
-        <div className="container-bs">
-          <SectionLabel index="02">Impact</SectionLabel>
-          <RevealText id="impact-title" as="h2" text={"The numbers that *matter.*"} className="font-display-tight mt-6 text-[clamp(2.5rem,5.4vw,5rem)] font-semibold" />
-          <div className="mt-14 sm:mt-20">
-            <MetricsRow project={p} />
+      {/* Results — published only after client approval. */}
+      {p.metrics.status === "verified" && (
+        <section aria-labelledby="impact-title" className="bg-ink py-24 text-paper sm:py-32">
+          <div className="container-bs">
+            <SectionLabel index="02">Impact</SectionLabel>
+            <RevealText id="impact-title" as="h2" text={"The numbers that *matter.*"} className="font-display-tight mt-6 text-[clamp(2.5rem,5.4vw,5rem)] font-semibold" />
+            <div className="mt-14 sm:mt-20">
+              <MetricsRow project={p} />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Approach */}
       <section aria-labelledby="approach-title" className="bg-paper py-24 text-ink sm:py-32">

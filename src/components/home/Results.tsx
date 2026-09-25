@@ -19,10 +19,12 @@ export function Results() {
   const items = rows
     .map(({ slug, pick }) => {
       const project = projects.find((p) => p.slug === slug);
-      if (!project) return null;
+      if (!project || project.metrics.status !== "verified") return null;
       return { project, metric: project.metrics[pick] as Metric };
     })
     .filter((x): x is NonNullable<typeof x> => x !== null);
+
+  if (items.length === 0) return null;
 
   return (
     <section aria-labelledby="results-title" className="bg-paper py-24 text-ink sm:py-32">

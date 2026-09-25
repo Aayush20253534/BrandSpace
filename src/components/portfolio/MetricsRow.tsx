@@ -14,6 +14,8 @@ export function MetricsRow({
   tone?: "light" | "dark";
 }) {
   const { revenue, roas, leads, status } = project.metrics;
+  if (status !== "verified") return null;
+
   const items = [revenue, roas, leads];
   return (
     <div>

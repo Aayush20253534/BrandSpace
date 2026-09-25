@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
-import { testimonials } from "@/data/testimonials";
+import { verifiedTestimonials } from "@/data/testimonials";
 import { cn, pad2 } from "@/lib/utils";
 import { RevealText } from "@/components/motion/RevealText";
 import { SectionLabel } from "@/components/ui/SectionLabel";
@@ -21,8 +21,8 @@ export function Testimonials() {
   const [shown, setShown] = useState(0); // rendered quote
   const figRef = useRef<HTMLElement>(null);
   const firstRender = useRef(true);
-  const count = testimonials.length;
-  const t = testimonials[shown]!;
+  const count = verifiedTestimonials.length;
+  const t = verifiedTestimonials[shown];
 
   const parts = () => {
     const fig = figRef.current;
@@ -78,6 +78,8 @@ export function Testimonials() {
       select(index - 1);
     }
   };
+
+  if (!t || count === 0) return null;
 
   return (
     <section aria-labelledby="feedback-title" className="bg-paper py-24 text-ink sm:py-32">
@@ -150,7 +152,7 @@ export function Testimonials() {
         </figure>
 
         <div className="mt-12 flex gap-2" role="group" aria-label="Choose testimonial" onKeyDown={onKey}>
-          {testimonials.map((x, i) => (
+          {verifiedTestimonials.map((x, i) => (
             <button
               key={x.id}
               type="button"

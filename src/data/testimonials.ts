@@ -90,6 +90,8 @@ export const testimonials: Testimonial[] = [
   },
 ];
 
+export const verifiedTestimonials = testimonials.filter((testimonial) => testimonial.status === "verified");
+
 export function getTestimonial(id: string | undefined) {
-  return testimonials.find((t) => t.id === id);
+  return verifiedTestimonials.find((testimonial) => testimonial.id === id);
 }

@@ -75,6 +75,12 @@ export const site = {
    * all placeholder content has been replaced.
    */
   flagPlaceholderContent: true,
+
+  /**
+   * The launch articles are still under editorial review. Keep them browsable
+   * for review, but out of search until every article has been approved.
+   */
+  blogIndexingEnabled: false,
 } as const;
 
 export const navigation = [
