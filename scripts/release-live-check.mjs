@@ -72,7 +72,15 @@ for (const pathname of publicPaths) {
 
     const canonical = findTag(html, "link", (a) => a.rel?.toLowerCase().split(/\s+/).includes("canonical"));
     const expectedCanonical = new URL(pathname, canonicalOrigin).toString();
-    check(canonical?.href === expectedCanonical, `${pathname}: canonical is ${canonical?.href ?? "missing"}, expected ${expectedCanonical}`);
+    let canonicalMatches = false;
+    if (canonical?.href) {
+      try {
+        canonicalMatches = new URL(canonical.href, canonicalOrigin).toString() === expectedCanonical;
+      } catch {
+        canonicalMatches = false;
+      }
+    }
+    check(canonicalMatches, `${pathname}: canonical is ${canonical?.href ?? "missing"}, expected ${expectedCanonical}`);
 
     const robots = findTag(html, "meta", (a) => a.name?.toLowerCase() === "robots");
     check(!robots?.content?.toLowerCase().includes("noindex"), `${pathname}: unexpectedly marked noindex`);
