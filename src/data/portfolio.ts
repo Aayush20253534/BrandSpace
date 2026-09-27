@@ -107,7 +107,7 @@ export const projects: Project[] = [
   {
     slug: "bar-code",
     name: "Bar Code",
-    url: "https://barcode-ruddy-gamma.vercel.app/",
+    url: "https://thebarcode.in/",
     industry: "Nightlife & Dining",
     location: "Civil Lines, Prayagraj",
     year: 2026,
